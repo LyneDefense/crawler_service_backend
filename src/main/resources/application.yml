@@ -1,0 +1,31 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: crawler_service
+  profiles:
+    active: dev
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/crawler_service_db
+    username: postgres
+    password: 123456
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-handlers-package: com.app.tuantuan.config.mybatis.handler
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+      logic-delete-value: true
+      logic-not-delete-value: false
+  type-aliases-package: com.app.tuantuan.model.entity
+
+swagger:
+  enable: true
