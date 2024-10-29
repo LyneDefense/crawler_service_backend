@@ -5,14 +5,17 @@ spring:
   application:
     name: crawler_service
   profiles:
-    active: dev
+    active: local
   jackson:
     property-naming-strategy: SNAKE_CASE
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/crawler_service_db
+    url: jdbc:postgresql://host.docker.internal:5432/crawler_service_db
     username: postgres
     password: 123456
+  flyway:
+    clean-disabled: true #??????true??????false -> ?????????????
+    enabled: true
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-handlers-package: com.app.tuantuan.config.mybatis.handler
