@@ -1,5 +1,6 @@
 package com.app.tuantuan.controller;
 
+import com.app.tuantuan.model.base.Resp;
 import com.app.tuantuan.model.dto.onlinesign.SZSubscriptionOnlineSignInfoDto;
 import com.app.tuantuan.service.ISZHouseSubscriptionOnlineSingService;
 import io.swagger.annotations.Api;
@@ -18,16 +19,18 @@ public class SZHouseSubscriptionOnlineSignController {
   @Resource private ISZHouseSubscriptionOnlineSingService szHouseSubscriptionOnlineSingService;
 
   @GetMapping("/{date}")
-  public List<SZSubscriptionOnlineSignInfoDto> selectSubscriptionOnlineSignInfoByDate(
+  public Resp<List<SZSubscriptionOnlineSignInfoDto>> selectSubscriptionOnlineSignInfoByDate(
       @PathVariable(value = "date")
           @DateTimeFormat(pattern = "yyyy-MM-dd")
           @ApiParam(required = true, value = "查询日期,yyyy-MM-dd")
           LocalDate date) {
-    return szHouseSubscriptionOnlineSingService.selectSubscriptionOnlineSignInfoByDate(date);
+    return Resp.data(
+        szHouseSubscriptionOnlineSingService.selectSubscriptionOnlineSignInfoByDate(date));
   }
 
   @PutMapping("/crawl")
-  public void crawlAndSaveTodayHouseDealsInfo() {
+  public Resp<Void> crawlAndSaveTodayHouseDealsInfo() {
     szHouseSubscriptionOnlineSingService.crawAndSaveSubscriptionOnlineSignInfo();
+    return Resp.ok();
   }
 }

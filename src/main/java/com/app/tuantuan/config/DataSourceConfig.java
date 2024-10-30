@@ -19,8 +19,6 @@ public class DataSourceConfig implements CommandLineRunner {
   private String url;
   private String driverClassName;
 
-  // Getters and Setters
-
   @Override
   public void run(String... args) throws Exception {
     logger.info("正在连接的数据库 URL：{}", url);

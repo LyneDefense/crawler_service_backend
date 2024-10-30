@@ -1,6 +1,5 @@
 package com.app.tuantuan.crawler;
 
-import com.app.tuantuan.constant.CrawlerConstants;
 import com.app.tuantuan.enumeration.SZDistrictEnum;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -106,7 +105,6 @@ public abstract class AbstractHouseCrawler<T> {
    */
   protected Map<String, String> extractHiddenFields(Document doc, String cssQuery) {
     Map<String, String> hiddenFields = new HashMap<>();
-    //    Elements inputs = doc.select(CrawlerConstants.HIDDEN_INPUT_CSS_QUERY_CSS);
     Elements inputs = doc.select(cssQuery);
     for (Element input : inputs) {
       hiddenFields.put(input.attr("name"), input.attr("value"));

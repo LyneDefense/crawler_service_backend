@@ -20,6 +20,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
+/** <a href="https://zjj.sz.gov.cn:8004/">...</a> - 一手放成交信息-上月网签信息 */
 @Slf4j
 @Component
 public class SZHouseDealInfoCrawler extends AbstractHouseCrawler<SZHouseDealsInfoDto> {
@@ -63,8 +64,7 @@ public class SZHouseDealInfoCrawler extends AbstractHouseCrawler<SZHouseDealsInf
       Document postDoc = Jsoup.parse(postResponse);
 
       // 更新隐藏字段
-      hiddenFields =
-          this.extractHiddenFields(postDoc, CrawlerConstants.HIDDEN_INPUT_CSS_QUERY_CSS);
+      hiddenFields = this.extractHiddenFields(postDoc, CrawlerConstants.HIDDEN_INPUT_CSS_QUERY_CSS);
 
       // 解析日期和区域信息
       YearMonth date = this.parseDate(postDoc);
@@ -164,8 +164,7 @@ public class SZHouseDealInfoCrawler extends AbstractHouseCrawler<SZHouseDealsInf
    * @return 面积详情的列表。
    */
   private List<SZHouseDealsAreaDetailDto> parseAreaStatisticsTable(Document doc) {
-    Element areaStatisticsTable =
-        doc.selectFirst("div.recordlistBox.fix > table.table");
+    Element areaStatisticsTable = doc.selectFirst("div.recordlistBox.fix > table.table");
     if (areaStatisticsTable != null) {
       List<SZHouseDealsAreaDetailDto> areas = new ArrayList<>();
       Elements rows = areaStatisticsTable.select("tbody > tr");
