@@ -43,8 +43,10 @@ transfer_and_verify() {
 
     # 传输镜像文件并显示实时进度
     log "INFO" "正在传输镜像文件 '$src_file' 到服务器..."
-    scp "$src_file" "${SERVER_USER}@${SERVER_IP}:${dest_dir}/" 2>&1 | tee -a "$LOG_FILE"
-    if [ $? -ne 0 ]; then
+    {
+        rsync -av --progress "$src_file" "${SERVER_USER}@${SERVER_IP}:${dest_dir}/" 2>&1
+    } | tee -a "$LOG_FILE"
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
         log "ERROR" "镜像文件传输失败。"
         exit 1
     fi
@@ -52,8 +54,10 @@ transfer_and_verify() {
 
     # 传输本地哈希文件
     log "INFO" "正在传输哈希文件 '$HASH_FILE' 到服务器..."
-    scp "$HASH_FILE" "${SERVER_USER}@${SERVER_IP}:${dest_dir}/crawler_service_backend_latest.tar.sha256" 2>&1 | tee -a "$LOG_FILE"
-    if [ $? -ne 0 ]; then
+    {
+        rsync -av --progress "$HASH_FILE" "${SERVER_USER}@${SERVER_IP}:${dest_dir}/crawler_service_backend_latest.tar.sha256" 2>&1
+    } | tee -a "$LOG_FILE"
+    if [ ${PIPESTATUS[0]} -ne 0 ]; then
         log "ERROR" "哈希文件传输失败。"
         exit 1
     fi
@@ -61,7 +65,10 @@ transfer_and_verify() {
 
     # 在服务器上计算并比较哈希值
     log "INFO" "在服务器上验证镜像文件的完整性..."
-    ssh "${SERVER_USER}@${SERVER_IP}" "shasum -a 256 ${dest_dir}/crawler_service_backend_latest.tar | awk '{print \$1}' > ${dest_dir}/crawler_service_backend_latest.tar.sha256_computed && diff ${dest_dir}/crawler_service_backend_latest.tar.sha256 ${dest_dir}/crawler_service_backend_latest.tar.sha256_computed" | tee -a "$LOG_FILE"
+    ssh "${SERVER_USER}@${SERVER_IP}" "
+        shasum -a 256 ${dest_dir}/crawler_service_backend_latest.tar | awk '{print \$1}' > ${dest_dir}/crawler_service_backend_latest.tar.sha256_computed
+        diff ${dest_dir}/crawler_service_backend_latest.tar.sha256 ${dest_dir}/crawler_service_backend_latest.tar.sha256_computed
+    " | tee -a "$LOG_FILE"
 
     if [ $? -eq 0 ]; then
         log "INFO" "镜像文件传输完整。"
@@ -116,4 +123,5 @@ transfer_and_verify "$IMAGE_FILE" "$SERVER_IMAGE_DIR"
 
 # 部署完成
 log "INFO" "==================== 构建并上传 Docker 镜像完成 ===================="
+
 exit 0
