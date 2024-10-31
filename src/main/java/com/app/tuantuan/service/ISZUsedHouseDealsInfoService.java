@@ -4,7 +4,7 @@ import com.app.tuantuan.model.dto.housedeal.used.SZUsedHouseDealsInfoDto;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface ISZUseHouseDealsInfoService {
+public interface ISZUsedHouseDealsInfoService {
 
   /** 爬取并保存二手房交易信息。 */
   void crawlAndSaveUseHouseDealsInfo();

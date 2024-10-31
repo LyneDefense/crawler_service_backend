@@ -13,7 +13,7 @@ spring:
     url: jdbc:postgresql://host.docker.internal:5432/crawler_service_db
     username: postgres
     password: 123456
-  flyway:
+    flyway:
     clean-disabled: true #??????true??????false -> ?????????????
     enabled: true
 mybatis:

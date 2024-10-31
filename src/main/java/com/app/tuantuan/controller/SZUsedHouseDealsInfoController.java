@@ -2,7 +2,7 @@ package com.app.tuantuan.controller;
 
 import com.app.tuantuan.model.base.Resp;
 import com.app.tuantuan.model.dto.housedeal.used.SZUsedHouseDealsInfoDto;
-import com.app.tuantuan.service.ISZUseHouseDealsInfoService;
+import com.app.tuantuan.service.ISZUsedHouseDealsInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import java.time.LocalDate;
@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.*;
 @Api(value = "SZHouseDealInfoController", tags = "深圳二手商品房成交信息控制器")
 public class SZUsedHouseDealsInfoController {
 
-  @Resource ISZUseHouseDealsInfoService useHouseDealsInfoService;
+  @Resource
+  ISZUsedHouseDealsInfoService useHouseDealsInfoService;
 
   @GetMapping("/{date}")
   public Resp<List<SZUsedHouseDealsInfoDto>> selectSubscriptionOnlineSignInfoByDate(
