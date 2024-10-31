@@ -1,6 +1,7 @@
 package com.app.tuantuan.repository;
 
 import com.app.tuantuan.config.mybatis.query.LambdaQueryWrapperX;
+import com.app.tuantuan.constant.CustomException;
 import com.app.tuantuan.mapper.*;
 import com.app.tuantuan.model.dto.onlinesign.onsale.SZOnsaleContractOnlineSignDetailDto;
 import com.app.tuantuan.model.dto.onlinesign.onsale.SZOnsaleContractOnlineSignInfoDto;
@@ -51,8 +52,7 @@ public class SZSubscriptionOnlineSignInfoRepository {
           date);
       int i = subscriptionOnlineSignInfoMapper.insert(subscriptionOnlineSignInfoDO);
       if (i != 1) {
-        log.error("[保存深圳“预售”商品房网签认购信息失败]");
-        return;
+        throw new CustomException("[保存深圳“预售”商品房网签认购信息失败]");
       }
       String parentId = subscriptionOnlineSignInfoDO.getId();
 
@@ -98,8 +98,7 @@ public class SZSubscriptionOnlineSignInfoRepository {
           date);
       int i = onsaleContractOnlineSignInfoMapper.insert(onsaleContractOnlineSignInfoDO);
       if (i != 1) {
-        log.error("[保存深圳“现售”商品房网签认购信息失败]");
-        return;
+        throw new CustomException("[保存深圳“现售”商品房网签认购信息失败]");
       }
       String parentId = onsaleContractOnlineSignInfoDO.getId();
 

@@ -3,8 +3,8 @@ package com.app.tuantuan.repository;
 import com.app.tuantuan.config.mybatis.query.LambdaQueryWrapperX;
 import com.app.tuantuan.constant.CustomException;
 import com.app.tuantuan.enumeration.SZDistrictEnum;
-import com.app.tuantuan.mapper.DealsDetailMapper;
-import com.app.tuantuan.mapper.HouseDealInfoMapper;
+import com.app.tuantuan.mapper.SZHouseDealsDetailMapper;
+import com.app.tuantuan.mapper.SZHouseDealInfoMapper;
 import com.app.tuantuan.mapper.HouseDealsAreaDetailMapper;
 import com.app.tuantuan.model.dto.housedeal.SZHouseDealsInfoDto;
 import com.app.tuantuan.model.entity.housedeal.SZHouseDealsArealDetailDO;
@@ -25,8 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class SZHouseDealsInfoRepository {
 
-  @Resource HouseDealInfoMapper houseDealInfoMapper;
-  @Resource DealsDetailMapper dealsDetailMapper;
+  @Resource
+  SZHouseDealInfoMapper SZHouseDealInfoMapper;
+  @Resource
+  SZHouseDealsDetailMapper SZHouseDealsDetailMapper;
   @Resource HouseDealsAreaDetailMapper houseDealsAreaDetailMapper;
 
   @Transactional
@@ -46,7 +48,7 @@ public class SZHouseDealsInfoRepository {
         SZHouseDealsInfoDO szHouseDealsInfoDO = dto.to();
         log.info(
             "[保存商品房成交信息,所在城市:深圳,所在区:{},日期:{}]", dto.getDistrict().getValue(), dto.getUpdateDate());
-        int i = houseDealInfoMapper.insert(szHouseDealsInfoDO);
+        int i = SZHouseDealInfoMapper.insert(szHouseDealsInfoDO);
         if (i != 1) {
           throw new CustomException("保存商品房成交信息失败");
         }
@@ -54,7 +56,7 @@ public class SZHouseDealsInfoRepository {
         List<SZHouseDealsDetailDO> houseDealsDetailDOS =
             dto.getDealsDetails().stream().map(e -> e.to(id)).toList();
         log.info("[保存商品房成交详情,数量:{}]", houseDealsDetailDOS.size());
-        dealsDetailMapper.insertBatch(houseDealsDetailDOS);
+        SZHouseDealsDetailMapper.insertBatch(houseDealsDetailDOS);
         List<SZHouseDealsArealDetailDO> szHouseDealsArealDetailDOS =
             dto.getDealsAreaDetails().stream().map(e -> e.to(id)).toList();
         log.info("[保存商品房成交面积详情,数量:{}]", szHouseDealsArealDetailDOS.size());
@@ -73,7 +75,7 @@ public class SZHouseDealsInfoRepository {
     List<SZHouseDealsInfoDto> szHouseDealsInfoDtos = new ArrayList<>();
     for (SZHouseDealsInfoDO szHouseDealsInfoDO : szHouseDealsInfoDOS) {
       List<SZHouseDealsDetailDO> houseDealsDetailDOS =
-          dealsDetailMapper.selectList(
+          SZHouseDealsDetailMapper.selectList(
               new LambdaQueryWrapperX<SZHouseDealsDetailDO>()
                   .eq(SZHouseDealsDetailDO::getParentId, szHouseDealsInfoDO.getId()));
       List<SZHouseDealsArealDetailDO> SZHouseDealsArealDetailDOS =
@@ -104,8 +106,8 @@ public class SZHouseDealsInfoRepository {
           updateDate,
           districtEnum.getValue());
       String id = szHouseDealsInfoDO.getId();
-      houseDealInfoMapper.deleteById(id);
-      dealsDetailMapper.delete(
+      SZHouseDealInfoMapper.deleteById(id);
+      SZHouseDealsDetailMapper.delete(
           new LambdaQueryWrapperX<SZHouseDealsDetailDO>()
               .eq(SZHouseDealsDetailDO::getParentId, id));
       houseDealsAreaDetailMapper.delete(
@@ -118,7 +120,7 @@ public class SZHouseDealsInfoRepository {
 
   public List<SZHouseDealsInfoDO> selectLatestByYearMonth(int year, int month) {
     List<SZHouseDealsInfoDO> list =
-        houseDealInfoMapper.selectList(
+        SZHouseDealInfoMapper.selectList(
             new LambdaQueryWrapperX<SZHouseDealsInfoDO>()
                 .eq(SZHouseDealsInfoDO::getYear, year)
                 .eq(SZHouseDealsInfoDO::getMonth, month)
@@ -137,7 +139,7 @@ public class SZHouseDealsInfoRepository {
 
   public List<SZHouseDealsInfoDO> selectByYearMonthAndUpdateDate(
       int year, int month, LocalDate updateDate) {
-    return houseDealInfoMapper.selectList(
+    return SZHouseDealInfoMapper.selectList(
         new LambdaQueryWrapperX<SZHouseDealsInfoDO>()
             .eq(SZHouseDealsInfoDO::getYear, year)
             .eq(SZHouseDealsInfoDO::getMonth, month)
