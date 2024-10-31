@@ -20,7 +20,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
-/** <a href="https://zjj.sz.gov.cn:8004/">...</a> - 一手放成交信息-上月网签信息 */
+/** <a href="https://zjj.sz.gov.cn:8004/">...</a> - 一手放成交信息-预售成交-上月网签信息 */
 @Slf4j
 @Component
 public class SZHouseDealInfoCrawler extends AbstractHouseCrawler<SZHouseDealsInfoDto> {

@@ -1,4 +1,4 @@
-package com.app.tuantuan.model.entity.onlinesign;
+package com.app.tuantuan.model.entity.onlinesign.preale;
 
 import com.app.tuantuan.model.entity.BaseDO;
 import com.baomidou.mybatisplus.annotation.TableName;

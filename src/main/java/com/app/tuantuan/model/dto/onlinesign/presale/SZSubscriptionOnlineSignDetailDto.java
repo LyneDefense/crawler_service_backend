@@ -1,6 +1,6 @@
-package com.app.tuantuan.model.dto.onlinesign;
+package com.app.tuantuan.model.dto.onlinesign.presale;
 
-import com.app.tuantuan.model.entity.onlinesign.SZSubscriptionOnlineSignDetailDO;
+import com.app.tuantuan.model.entity.onlinesign.preale.SZSubscriptionOnlineSignDetailDO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;

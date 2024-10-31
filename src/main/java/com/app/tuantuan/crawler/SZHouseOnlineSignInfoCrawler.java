@@ -2,10 +2,10 @@ package com.app.tuantuan.crawler;
 
 import com.app.tuantuan.constant.CrawlerConstants;
 import com.app.tuantuan.enumeration.SZDistrictEnum;
-import com.app.tuantuan.model.dto.onlinesign.SZContractOnlineSignAreaDetailDto;
-import com.app.tuantuan.model.dto.onlinesign.SZContractOnlineSignDetailDto;
-import com.app.tuantuan.model.dto.onlinesign.SZSubscriptionOnlineSignDetailDto;
-import com.app.tuantuan.model.dto.onlinesign.SZSubscriptionOnlineSignInfoDto;
+import com.app.tuantuan.model.dto.onlinesign.presale.SZContractOnlineSignAreaDetailDto;
+import com.app.tuantuan.model.dto.onlinesign.presale.SZContractOnlineSignDetailDto;
+import com.app.tuantuan.model.dto.onlinesign.presale.SZSubscriptionOnlineSignDetailDto;
+import com.app.tuantuan.model.dto.onlinesign.presale.SZSubscriptionOnlineSignInfoDto;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -18,7 +18,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
-/** <a href="https://zjj.sz.gov.cn:8004/">...</a> - 一手放成交信息-当日网签信息 */
+/** <a href="https://zjj.sz.gov.cn:8004/">...</a> - 一手放成交信息-预售成交-当日网签信息 */
 @Slf4j
 @Component
 public class SZHouseOnlineSignInfoCrawler

@@ -10,7 +10,7 @@ spring:
     property-naming-strategy: SNAKE_CASE
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://host.docker.internal:5432/crawler_service_db
+    url: jdbc:postgresql://localhost:5432/crawler_service_db
     username: postgres
     password: 123456
   flyway:

@@ -1,10 +1,14 @@
-package com.app.tuantuan.model.dto.onlinesign;
+package com.app.tuantuan.model.dto.onlinesign.presale;
 
 import com.app.tuantuan.enumeration.SZDistrictEnum;
-import com.app.tuantuan.model.entity.onlinesign.SZContractOnlineSignAreaDetailDO;
-import com.app.tuantuan.model.entity.onlinesign.SZContractOnlineSignDetailDO;
-import com.app.tuantuan.model.entity.onlinesign.SZSubscriptionOnlineSignDetailDO;
-import com.app.tuantuan.model.entity.onlinesign.SZSubscriptionOnlineSignInfoDO;
+import com.app.tuantuan.model.entity.onlinesign.preale.SZContractOnlineSignAreaDetailDO;
+import com.app.tuantuan.model.entity.onlinesign.preale.SZContractOnlineSignDetailDO;
+import com.app.tuantuan.model.entity.onlinesign.preale.SZSubscriptionOnlineSignDetailDO;
+import com.app.tuantuan.model.entity.onlinesign.preale.SZSubscriptionOnlineSignInfoDO;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
@@ -25,6 +29,8 @@ public class SZSubscriptionOnlineSignInfoDto {
   private SZDistrictEnum district;
 
   @ApiModelProperty("日期")
+  @JsonDeserialize(using = LocalDateDeserializer.class)
+  @JsonSerialize(using = LocalDateSerializer.class)
   private LocalDate date;
 
   @ApiModelProperty("认购网签信息")

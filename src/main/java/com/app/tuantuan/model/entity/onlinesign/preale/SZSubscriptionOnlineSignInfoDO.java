@@ -1,13 +1,12 @@
-package com.app.tuantuan.model.entity.onlinesign;
+package com.app.tuantuan.model.entity.onlinesign.preale;
 
 import com.app.tuantuan.enumeration.SZDistrictEnum;
 import com.app.tuantuan.model.entity.BaseDO;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import java.time.LocalDate;
 import lombok.*;
 
@@ -23,8 +22,7 @@ public class SZSubscriptionOnlineSignInfoDO extends BaseDO {
 
   private SZDistrictEnum district;
 
-  @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-  @JsonSerialize(using = LocalDateTimeSerializer.class)
-  @JsonFormat(pattern = "yyyy-MM-dd")
+  @JsonDeserialize(using = LocalDateDeserializer.class)
+  @JsonSerialize(using = LocalDateSerializer.class)
   private LocalDate date;
 }
