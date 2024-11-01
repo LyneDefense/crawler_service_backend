@@ -29,5 +29,5 @@ public class BaseDO {
   private LocalDateTime updateTime;
 
   /** 是否删除 */
-  @TableLogic private Boolean deleted;
+  // @TableLogic private Boolean deleted;
 }

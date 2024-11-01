@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/house_deal/used/sz")
-@Api(value = "SZHouseDealInfoController", tags = "深圳二手商品房成交信息控制器")
+@Api(value = "SZUsedHouseDealsInfoController", tags = "深圳二手商品房成交信息控制器")
 public class SZUsedHouseDealsInfoController {
 
   @Resource

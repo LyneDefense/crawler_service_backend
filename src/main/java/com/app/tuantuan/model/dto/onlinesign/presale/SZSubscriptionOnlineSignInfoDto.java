@@ -20,7 +20,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel("深圳商品房网签认购信息")
+@ApiModel("深圳预售商品房网签认购信息")
 public class SZSubscriptionOnlineSignInfoDto {
 
   private String id;

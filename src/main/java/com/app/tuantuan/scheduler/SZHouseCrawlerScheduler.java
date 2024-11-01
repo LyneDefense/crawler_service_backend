@@ -1,9 +1,8 @@
 package com.app.tuantuan.scheduler;
 
-import com.app.tuantuan.service.ISZHouseDealInfoService;
-import com.app.tuantuan.service.ISZHouseDealStatisticService;
-import com.app.tuantuan.service.ISZHouseSubscriptionOnlineSingService;
-import com.app.tuantuan.service.ISZUsedHouseDealsInfoService;
+import com.app.tuantuan.model.dto.newhouse.NewHouseMainPageReqDto;
+import com.app.tuantuan.service.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +17,7 @@ public class SZHouseCrawlerScheduler {
   @Resource ISZHouseSubscriptionOnlineSingService subscriptionOnlineSingService;
   @Resource ISZHouseDealStatisticService statisticService;
   @Resource ISZUsedHouseDealsInfoService usedHouseDealsInfoService;
+  @Resource ISZNewHouseProjectService szNewHouseProjectService;
 
   /** 区域房产交易数据定时任务：每天凌晨12点执行 */
   @Scheduled(cron = "0 0 0 * * ?")
@@ -52,5 +52,13 @@ public class SZHouseCrawlerScheduler {
   public void crawlSZUsedHouseDealsInfo() {
     usedHouseDealsInfoService.crawlAndSaveUseHouseDealsInfo();
     log.info("[执行爬取深圳二手房交易信息定时任务成功,时间:{}]", LocalDateTime.now());
+  }
+
+  /** 一手房源公示首页信息爬取定时任务：每天凌晨12点和中午12点执行 */
+  @Scheduled(cron = "0 0 0,12 * * ?")
+  public void crawNewHouseMainPageItems() {
+    szNewHouseProjectService.crawlAndSaveMainPageItems(
+        new NewHouseMainPageReqDto(LocalDate.of(2021, 1, 1), LocalDate.now()));
+    log.info("[执行一手房源公示首页信息爬取定时任务成功,时间:{}]", LocalDateTime.now());
   }
 }

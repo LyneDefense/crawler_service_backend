@@ -29,6 +29,7 @@ public class SZUsedHouseDealsInfoDto {
 
   private SZDistrictEnum district;
 
+  @ApiModelProperty("深圳二手商品住房成交信息详情列表")
   private List<SZUsedHouseDealsDetailDto> details;
 
   public SZUsedHouseDealsInfoDO to() {
