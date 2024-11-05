@@ -55,7 +55,7 @@ public class SZHouseCrawlerScheduler {
   }
 
   /** 一手房源公示首页信息爬取定时任务：每天凌晨1点，除了周三 */
-  @@Scheduled(cron = "0 0 1 * * 1-3,5-7")
+  @Scheduled(cron = "0 0 1 * * 1-3,5-7")
   public void crawNewHouseMainPageItemsAndBuildingsDaily() {
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();
