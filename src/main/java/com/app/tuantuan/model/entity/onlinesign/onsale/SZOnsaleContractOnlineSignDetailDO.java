@@ -1,6 +1,8 @@
 package com.app.tuantuan.model.entity.onlinesign.onsale;
 
 import com.app.tuantuan.model.entity.BaseDO;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -13,6 +15,7 @@ import lombok.*;
 @TableName(value = "public.sz_onsale_subscription_online_sign_detail", autoResultMap = true)
 public class SZOnsaleContractOnlineSignDetailDO extends BaseDO {
 
+  @TableId(type = IdType.ASSIGN_UUID)
   private String id;
 
   private String parentId;

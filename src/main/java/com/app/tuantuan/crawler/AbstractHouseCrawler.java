@@ -1,5 +1,6 @@
 package com.app.tuantuan.crawler;
 
+import com.app.tuantuan.constant.CustomException;
 import com.app.tuantuan.enumeration.SZDistrictEnum;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -166,7 +167,7 @@ public abstract class AbstractHouseCrawler<T> {
     try {
       return Integer.parseInt(text.replaceAll(",", "").trim());
     } catch (NumberFormatException e) {
-      return 0;
+      throw new CustomException("字符串解析为整数失败");
     }
   }
 
@@ -180,7 +181,7 @@ public abstract class AbstractHouseCrawler<T> {
     try {
       return Double.parseDouble(text.replaceAll(",", "").trim());
     } catch (NumberFormatException e) {
-      return 0.0;
+      throw new CustomException("字符串解析为浮点数失败");
     }
   }
 

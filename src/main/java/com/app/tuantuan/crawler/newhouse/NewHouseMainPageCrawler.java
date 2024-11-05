@@ -37,6 +37,9 @@ public class NewHouseMainPageCrawler {
         params.getStartDate(),
         params.getEndDate(),
         params.getProjectName());
+    if (params.getStartDate().isAfter(params.getEndDate())) {
+      return new ArrayList<>();
+    }
     List<NewHouseMainPageItemDto> projects = new ArrayList<>();
 
     // 创建CookieStore以维护会话
@@ -86,10 +89,8 @@ public class NewHouseMainPageCrawler {
       postResponse.close();
 
       Document postDoc = Jsoup.parse(postHtml, BASE_URL);
-      List<NewHouseMainPageItemDto> pageProjects =
-          parseAndFilterProjectsFromDocument(postDoc, params);
-      projects.addAll(pageProjects);
-
+      List<NewHouseMainPageItemDto> pageProjects = parseAndFilterProjectsFromDocument(postDoc);
+      projects.addAll(filterByCondition(pageProjects, params));
       // 处理分页
       while (shouldContinue && hasNextPage(postDoc)) {
         // 准备下一页的POST请求
@@ -124,19 +125,17 @@ public class NewHouseMainPageCrawler {
 
         // 解析新页的HTML时，设置base URI以确保绝对URL正确解析
         postDoc = Jsoup.parse(nextHtml, BASE_URL);
-        pageProjects = parseAndFilterProjectsFromDocument(postDoc, params);
-        projects.addAll(pageProjects);
-
+        pageProjects = parseAndFilterProjectsFromDocument(postDoc);
         // 如果当前页的最后一个项目的 approvalDate 小于 startDate，停止爬取
         if (!pageProjects.isEmpty()) {
           NewHouseMainPageItemDto lastProject = pageProjects.get(pageProjects.size() - 1);
+          // 过滤当前页面的item
+          pageProjects = filterByCondition(pageProjects, params);
           if (lastProject.getApprovalDate().isBefore(params.getStartDate())) {
             shouldContinue = false;
           }
-        } else {
-          // 当前页没有符合条件的项目，可能后续页面也没有
-          shouldContinue = false;
         }
+        projects.addAll(pageProjects);
       }
       httpClient.close();
 
@@ -144,12 +143,29 @@ public class NewHouseMainPageCrawler {
       throw new CustomException("解析一手房源公示首页中的项目数据失败");
     }
     log.info(
-        "[开始爬取一手房源公示首页信息完成,起始时间:{},终止时间,:{},项目名称:{},共爬取数据条数:{}]",
+        "[爬取一手房源公示首页信息完成,起始时间:{},终止时间,:{},项目名称:{},共爬取数据条数:{}]",
         params.getStartDate(),
         params.getEndDate(),
         params.getProjectName(),
         projects.size());
     return projects;
+  }
+
+  private List<NewHouseMainPageItemDto> filterByCondition(
+      List<NewHouseMainPageItemDto> pageProjects, NewHouseMainPageReqDto params) {
+    return pageProjects.stream()
+        .filter(
+            p -> {
+              boolean nameFilter =
+                  params.getProjectName() != null && !params.getProjectName().isEmpty();
+              boolean dateSuccess =
+                  !p.getApprovalDate().isBefore(params.getStartDate())
+                      && !p.getApprovalDate().isAfter(params.getEndDate());
+              boolean nameSuccess =
+                  !nameFilter || (p.getProjectName().contains(params.getProjectName()));
+              return dateSuccess && nameSuccess;
+            })
+        .toList();
   }
 
   /** 提取页面中的所有隐藏字段 */
@@ -166,11 +182,9 @@ public class NewHouseMainPageCrawler {
    * 解析页面中的项目数据，并根据条件过滤
    *
    * @param doc 页面文档
-   * @param params 过滤条件
    * @return 符合条件的项目列表
    */
-  private List<NewHouseMainPageItemDto> parseAndFilterProjectsFromDocument(
-      Document doc, NewHouseMainPageReqDto params) {
+  private List<NewHouseMainPageItemDto> parseAndFilterProjectsFromDocument(Document doc) {
     List<NewHouseMainPageItemDto> projects = new ArrayList<>();
     Element table = doc.selectFirst("table.table.ta-c.bor-b-1.table-white");
     if (table != null) {
@@ -196,35 +210,17 @@ public class NewHouseMainPageCrawler {
           String district = cols.get(4).text().trim();
           LocalDate approvalDate = LocalDate.parse(cols.get(5).text().trim());
 
-          // 根据过滤条件进行判断
-          boolean include = true;
-          // 日期过滤
-          if (params.getStartDate() != null && params.getEndDate() != null) {
-            if (approvalDate.isBefore(params.getStartDate())
-                || approvalDate.isAfter(params.getEndDate())) {
-              include = false;
-            }
-          }
-          // 项目名称过滤
-          if (include && params.getProjectName() != null && !params.getProjectName().isEmpty()) {
-            if (!projectName.contains(params.getProjectName())) {
-              include = false;
-            }
-          }
-          if (include) {
-            NewHouseMainPageItemDto project =
-                new NewHouseMainPageItemDto(
-                    null,
-                    preSaleNumber,
-                    preSaleNumberLink,
-                    projectName,
-                    projectNameLink,
-                    developer,
-                    district,
-                    approvalDate);
-            projects.add(project);
-          }
-
+          NewHouseMainPageItemDto project =
+              new NewHouseMainPageItemDto(
+                  null,
+                  preSaleNumber,
+                  preSaleNumberLink,
+                  projectName,
+                  projectNameLink,
+                  developer,
+                  district,
+                  approvalDate);
+          projects.add(project);
         } catch (Exception e) {
           throw new CustomException("解析一手房源公示首页中的项目数据失败");
         }

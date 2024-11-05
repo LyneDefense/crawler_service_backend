@@ -2,6 +2,8 @@ package com.app.tuantuan.model.entity.newhouse;
 
 
 import com.app.tuantuan.model.entity.BaseDO;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -19,6 +21,7 @@ import java.time.LocalDate;
 @TableName(value = "public.sz_new_house_main_page_item", autoResultMap = true)
 public class NewHouseMainPageItemDO extends BaseDO {
 
+    @TableId(type = IdType.ASSIGN_UUID)
     private String id;
 
     private String preSaleNumber;
