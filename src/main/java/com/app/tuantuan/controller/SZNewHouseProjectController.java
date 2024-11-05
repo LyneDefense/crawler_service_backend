@@ -35,7 +35,7 @@ public class SZNewHouseProjectController {
   @PutMapping("/building/test/crawl")
   public Resp<Void> crawlMainPageBuildings() {
     szNewHouseProjectService.crawlAndSaveMainPageItems(
-        LocalDate.now().minusYears(1), LocalDate.now());
+        LocalDate.of(2020,1,1), LocalDate.now());
 //    szNewHouseProjectService.crawlAndSaveMainPageItems(
 //            LocalDate.of(2024,2,7), LocalDate.of(2024,2,7));
     return Resp.ok();
