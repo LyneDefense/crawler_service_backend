@@ -6,6 +6,7 @@ import com.app.tuantuan.model.base.PageResult;
 import com.app.tuantuan.model.dto.newhouse.NewHouseMainPageItemDto;
 import com.app.tuantuan.model.dto.newhouse.NewHouseMainPageReqDto;
 import com.app.tuantuan.model.entity.newhouse.NewHouseMainPageItemDO;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -105,11 +106,14 @@ public class SZNewHouseMainPageRepository {
     if (reqDto.getEndDate().isBefore(endDate)) {
       endDate = reqDto.getEndDate();
     }
-    return newHouseMainPageItemMapper.selectPage(
-        reqDto,
+    LambdaQueryWrapper<NewHouseMainPageItemDO> query =
         new LambdaQueryWrapperX<NewHouseMainPageItemDO>()
             .between(NewHouseMainPageItemDO::getApprovalDate, startDate, endDate)
-            .orderByDesc(NewHouseMainPageItemDO::getApprovalDate));
+            .orderByDesc(NewHouseMainPageItemDO::getApprovalDate);
+    if (reqDto.getProjectName() != null) {
+      query.eq(NewHouseMainPageItemDO::getProjectName, reqDto.getProjectName());
+    }
+    return newHouseMainPageItemMapper.selectPage(reqDto, query);
   }
 
   /**

@@ -25,7 +25,7 @@ public class NewHouseUnitInfoDto {
   private String blockNumber;
 
   @ApiModelProperty("楼层")
-  private int floorNumber;
+  private Integer floorNumber;
 
   @ApiModelProperty("房号")
   private String unitSourceNumber;
@@ -40,28 +40,28 @@ public class NewHouseUnitInfoDto {
   private Boolean accessibility;
 
   @ApiModelProperty("拟售价格-按建筑面积计")
-  private double constructionPrice;
+  private Double constructionPrice;
 
   @ApiModelProperty("拟售价格-按套内面积计")
-  private double grossFloorPrice;
+  private Double grossFloorPrice;
 
   @ApiModelProperty("预售查丈-建筑面积")
-  private double preSaleConstructionArea;
+  private Double preSaleConstructionArea;
 
   @ApiModelProperty("预售查丈-套内面积")
-  private double preSaleGrossFloorArea;
+  private Double preSaleGrossFloorArea;
 
   @ApiModelProperty("预售查丈-分摊面积")
-  private double preSaleSharedArea;
+  private Double preSaleSharedArea;
 
   @ApiModelProperty("竣工查丈-建筑面积")
-  private double preCompletionConstructionArea;
+  private Double preCompletionConstructionArea;
 
   @ApiModelProperty("竣工查丈-套内面积")
-  private double preCompletionGrossFloorArea;
+  private Double preCompletionGrossFloorArea;
 
   @ApiModelProperty("竣工查丈-分摊面积")
-  private double preCompletionSharedArea;
+  private Double preCompletionSharedArea;
 
   public NewHouseUnitInfoDO to(String id, String blockId) {
     return NewHouseUnitInfoDO.builder()

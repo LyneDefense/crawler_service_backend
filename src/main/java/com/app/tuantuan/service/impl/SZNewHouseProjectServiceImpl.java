@@ -15,7 +15,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +53,7 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
   }
 
   @Transactional
-  public CrawlStatus crawlAndSaveProject(NewHouseMainPageItemDto maiPageItem) {
+  public SZNewHouseProjectDto crawlAndSaveProject(NewHouseMainPageItemDto maiPageItem) {
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();
     try {
@@ -65,7 +64,12 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
             "[楼盘名称:{}, 预售证号:{} 不是住宅，跳过爬取]",
             maiPageItem.getProjectName(),
             maiPageItem.getPreSaleNumber());
-        return CrawlStatus.SKIPPED_NOT_RESIDENTIAL;
+        return new SZNewHouseProjectDto(
+            CrawlStatus.SKIPPED_NOT_RESIDENTIAL,
+            maiPageItem.getProjectName(),
+            maiPageItem,
+            null,
+            null);
       }
 
       List<NewHouseBuildingInfoDto> dtos = new ArrayList<>();
@@ -85,7 +89,12 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
           maiPageItem.getPreSaleNumber(),
           this.calculateTimeCost(stopWatch.getTotalTimeMillis()));
 
-      return CrawlStatus.SUCCESS;
+      return new SZNewHouseProjectDto(
+          CrawlStatus.SUCCESS,
+          maiPageItem.getProjectName(),
+          maiPageItem,
+          dtos,
+          mixedSalesInfo.getSalesInfo());
 
     } catch (Exception e) {
       stopWatch.stop();
@@ -95,17 +104,21 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
           maiPageItem.getPreSaleNumber(),
           this.calculateTimeCost(stopWatch.getTotalTimeMillis()),
           e);
-      return CrawlStatus.FAILURE;
+      return new SZNewHouseProjectDto(
+          CrawlStatus.FAILURE, maiPageItem.getProjectName(), maiPageItem, null, null);
     }
   }
 
   @Override
   @Transactional
-  public void crawlAndSaveProject(List<NewHouseMainPageItemDto> maiPageItems) {
+  public List<SZNewHouseProjectDto> crawlAndSaveProject(
+      List<NewHouseMainPageItemDto> maiPageItems) {
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();
-    List<CrawlStatus> statusList =
+    List<SZNewHouseProjectDto> projectDtos =
         maiPageItems.parallelStream().map(this::crawlAndSaveProject).toList();
+    List<CrawlStatus> statusList =
+        projectDtos.stream().map(SZNewHouseProjectDto::getStatus).toList();
     stopWatch.stop();
     long total = statusList.size();
     long skipped =
@@ -119,11 +132,13 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
         success,
         failure,
         this.calculateTimeCost(stopWatch.getTotalTimeMillis()));
+    return projectDtos;
   }
 
   @Override
   @Transactional
-  public void crawlAndSaveMainPageItems(LocalDate startDate, LocalDate endDate) {
+  public List<SZNewHouseProjectDto> crawlAndSaveMainPageItems(
+      LocalDate startDate, LocalDate endDate) {
     StopWatch stopWatch = new StopWatch();
     stopWatch.start();
 
@@ -132,9 +147,12 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
         newHouseMainPageCrawler.crawl(new NewHouseMainPageReqDto(startDate, endDate));
     log.info("[解析到 {}->{} 一手房源公示首页信息数量:{}]", startDate, endDate, dtos.size());
 
+    List<SZNewHouseProjectDto> projectDtos =
+        dtos.parallelStream().map(this::crawlAndSaveProject).toList();
+
     Map<CrawlStatus, Long> statusCountMap =
-        dtos.parallelStream()
-            .map(this::crawlAndSaveProject)
+        projectDtos.stream()
+            .map(SZNewHouseProjectDto::getStatus)
             .collect(Collectors.groupingByConcurrent(status -> status, Collectors.counting()));
 
     long total = dtos.size();
@@ -153,7 +171,10 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
         success,
         failure,
         this.calculateTimeCost(stopWatch.getTotalTimeMillis()));
+    return projectDtos;
   }
+
+  public void updateBackendSiteInfo(SZNewHouseProjectDto project) {}
 
   private String calculateTimeCost(long totalTimeMillis) {
     long hours = totalTimeMillis / 3600000;

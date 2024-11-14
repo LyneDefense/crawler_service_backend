@@ -2,6 +2,7 @@ package com.app.tuantuan.model.dto.onlinesign.onsale;
 
 import com.app.tuantuan.enumeration.SZDistrictEnum;
 import com.app.tuantuan.model.entity.onlinesign.onsale.SZOnsaleContractOnlineSignInfoDO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -26,6 +27,7 @@ public class SZOnsaleContractOnlineSignInfoDto {
 
   @JsonDeserialize(using = LocalDateDeserializer.class)
   @JsonSerialize(using = LocalDateSerializer.class)
+  @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDate date;
 
   @ApiModelProperty("商品房现售购房合同网签信息详情列表")

@@ -1,6 +1,7 @@
 package com.app.tuantuan.model.dto.newhouse;
 
 import com.app.tuantuan.model.entity.newhouse.NewHouseMainPageItemDO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -46,6 +47,7 @@ public class NewHouseMainPageItemDto {
   @ApiModelProperty("批准日期")
   @JsonDeserialize(using = LocalDateDeserializer.class)
   @JsonSerialize(using = LocalDateSerializer.class)
+  @JsonFormat(pattern = "yyyy-MM-dd")
   @NotNull
   private LocalDate approvalDate;
 

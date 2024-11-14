@@ -1,6 +1,6 @@
 package com.app.tuantuan.enumeration;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
@@ -20,34 +20,24 @@ public enum HouseStatus {
   JUDICIAL_SEIZURE("JUDICIAL_SEIZURE", "司法查封");
 
   private final String name;
-  @JsonValue private final String value;
+  @JsonValue @EnumValue private final String value;
 
   HouseStatus(String name, String value) {
     this.name = name;
     this.value = value;
   }
 
-  public static HouseStatus fromName(String name) {
-    for (HouseStatus type : values()) {
-      if (type.getName().equals(name)) {
-        return type;
-      }
-    }
-    return UNKNOWN;
-  }
-
-  @JsonCreator
-  public static HouseStatus fromValue(String value) {
-    for (HouseStatus type : values()) {
-      if (type.getValue().equals(value)) {
-        return type;
-      }
-    }
-    return UNKNOWN;
-  }
-
   @Override
   public String toString() {
     return this.value;
+  }
+
+  public static HouseStatus fromValue(String value) {
+    for (HouseStatus status : HouseStatus.values()) {
+      if (status.value.equals(value)) {
+        return status;
+      }
+    }
+    return UNKNOWN;
   }
 }

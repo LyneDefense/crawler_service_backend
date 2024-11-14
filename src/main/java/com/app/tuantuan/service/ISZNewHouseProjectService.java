@@ -6,6 +6,7 @@ import com.app.tuantuan.model.dto.newhouse.NewHouseMainPageReqDto;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.app.tuantuan.model.dto.newhouse.SZNewHouseProjectDto;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface ISZNewHouseProjectService {
@@ -19,8 +20,8 @@ public interface ISZNewHouseProjectService {
   PageResult<NewHouseMainPageItemDto> selectNewHouseMainPageItem(NewHouseMainPageReqDto reqDto);
 
   @Transactional
-  void crawlAndSaveProject(List<NewHouseMainPageItemDto> maiPageItems);
+  List<SZNewHouseProjectDto> crawlAndSaveProject(List<NewHouseMainPageItemDto> maiPageItems);
 
   @Transactional
-  void crawlAndSaveMainPageItems(LocalDate startDate, LocalDate endDate);
+  List<SZNewHouseProjectDto> crawlAndSaveMainPageItems(LocalDate startDate, LocalDate endDate);
 }

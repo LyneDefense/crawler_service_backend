@@ -25,6 +25,7 @@ public class SZHouseDealStatisticDataDO extends BaseDO {
 
   @JsonDeserialize(using = LocalDateDeserializer.class)
   @JsonSerialize(using = LocalDateSerializer.class)
+  @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDate date;
 
   /** 一手房成交面积 */

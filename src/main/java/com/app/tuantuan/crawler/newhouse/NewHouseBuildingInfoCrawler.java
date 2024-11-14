@@ -144,7 +144,7 @@ public class NewHouseBuildingInfoCrawler {
 
                 // 创建并填充 NewHouseUnitInfoDto 对象
                 NewHouseUnitInfoDto unitInfoDto = new NewHouseUnitInfoDto();
-                unitInfoDto.setStatus(HouseStatus.fromValue(houseStatus)); // 假设 HouseStatus 是枚举类型
+                unitInfoDto.setStatus(HouseStatus.fromValue(houseStatus));
                 unitInfoDto.setBlockNumber(blockInfoDto.getBlockName());
                 unitInfoDto.setFloorNumber(currentFloorNumber);
                 unitInfoDto.setUnitSourceNumber(houseNumberText);

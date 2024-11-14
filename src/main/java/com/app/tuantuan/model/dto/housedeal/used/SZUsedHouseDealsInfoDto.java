@@ -2,6 +2,7 @@ package com.app.tuantuan.model.dto.housedeal.used;
 
 import com.app.tuantuan.enumeration.SZDistrictEnum;
 import com.app.tuantuan.model.entity.housedeal.used.SZUsedHouseDealsInfoDO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -25,6 +26,7 @@ public class SZUsedHouseDealsInfoDto {
   @ApiModelProperty("日期")
   @JsonDeserialize(using = LocalDateDeserializer.class)
   @JsonSerialize(using = LocalDateSerializer.class)
+  @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDate date;
 
   private SZDistrictEnum district;

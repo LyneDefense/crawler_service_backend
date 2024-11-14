@@ -12,5 +12,5 @@ import lombok.*;
 @AllArgsConstructor
 public class NewHouseBuildingCrawlerReqDto {
 
-  @NotNull @NotEmpty private List<NewHouseMainPageItemDto> maiPageItems;
+  @NotNull @NotEmpty private List<NewHouseMainPageItemDto> mainPageItems;
 }

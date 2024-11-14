@@ -1,6 +1,7 @@
 package com.app.tuantuan.model.dto.newhouse;
 
 import com.app.tuantuan.model.entity.newhouse.NewHouseSalesInfoDO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -34,6 +35,7 @@ public class NewHouseSalesInfoDto {
   @ApiModelProperty("受让时间")
   @JsonDeserialize(using = LocalDateDeserializer.class)
   @JsonSerialize(using = LocalDateSerializer.class)
+  @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDate transferDate;
 
   @ApiModelProperty("所在区域")
@@ -67,25 +69,25 @@ public class NewHouseSalesInfoDto {
   private String landGrade;
 
   @ApiModelProperty("基地面积")
-  private double baseArea;
+  private Double baseArea;
 
   @ApiModelProperty("宗地面积")
-  private double plotArea;
+  private Double plotArea;
 
   @ApiModelProperty("总建筑面积")
-  private double totalConstructArea;
+  private Double totalConstructArea;
 
   @ApiModelProperty("预售总套数")
-  private int presaleTotalSets;
+  private Integer presaleTotalSets;
 
   @ApiModelProperty("预售总面积")
-  private double presaleTotalArea;
+  private Double presaleTotalArea;
 
   @ApiModelProperty("现售总套数")
-  private int onsaleTotalSets;
+  private Integer onsaleTotalSets;
 
   @ApiModelProperty("现售总面积")
-  private double onsaleTotalArea;
+  private Double onsaleTotalArea;
 
   @ApiModelProperty("工程监管机构")
   private String engineeringSupervisionAgency;
