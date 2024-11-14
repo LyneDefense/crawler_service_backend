@@ -9,5 +9,5 @@ public interface CrawlerUpdateServiceClient {
 
     @Headers("Content-Type: application/json")
     @RequestLine("POST /crawler/update")
-    void updateCrawlerData(@Param("body") SZNewHouseProjectDto dto);
+    void updateCrawlerData(SZNewHouseProjectDto dto);
 }

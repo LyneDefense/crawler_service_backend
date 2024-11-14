@@ -257,14 +257,6 @@ public class NewHouseBuildingInfoCrawler {
     return result;
   }
 
-  //  private int extractUnitSourceNumber(String houseNumberText) {
-  //    // 示例："房号：3501" -> 3501
-  //    try {
-  //      return Integer.parseInt(houseNumberText.replaceAll("[^0-9]", ""));
-  //    } catch (NumberFormatException e) {
-  //      throw new CustomException("房号解析失败: " + houseNumberText);
-  //    }
-  //  }
 
   private NewHouseUnitInfoDto fetchUnitDetail(
       CloseableHttpClient httpClient, String url, NewHouseUnitInfoDto unitInfoDto) {

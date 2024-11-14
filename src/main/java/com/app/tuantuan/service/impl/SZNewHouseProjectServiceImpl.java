@@ -97,13 +97,10 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
           mixedSalesInfo.getSalesInfo());
 
     } catch (Exception e) {
-      stopWatch.stop();
       log.error(
-          "[保存一手房源公示首页信息失败, 楼盘名称:{}, 预售证号:{}, 消耗时间:{}]",
+          "[保存一手房源公示首页信息失败, 楼盘名称:{}, 预售证号:{}]",
           maiPageItem.getProjectName(),
-          maiPageItem.getPreSaleNumber(),
-          this.calculateTimeCost(stopWatch.getTotalTimeMillis()),
-          e);
+          maiPageItem.getPreSaleNumber());
       return new SZNewHouseProjectDto(
           CrawlStatus.FAILURE, maiPageItem.getProjectName(), maiPageItem, null, null);
     }
