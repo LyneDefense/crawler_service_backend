@@ -23,7 +23,7 @@ public class CrawlerUpdateServiceCaller extends BaseHttpServiceCaller {
 
   @Override
   void init() {
-    final String baseUrl = String.format("http://%s:%d", "127.0.0.1", 8081);
+    final String baseUrl = String.format("http://%s:%d", "tuantuan-backend-service", 8083);
     this.crawlerUpdateServiceClient =
         new Feign.Builder()
             .retryer(Retryer.NEVER_RETRY)

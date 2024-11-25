@@ -9,18 +9,18 @@
 # ----------------------------- 配置部分 -------------------------------------
 
 # Docker 镜像名称和标签
-IMAGE_NAME="lyneee/crawler_service_backend:latest"
+IMAGE_NAME="lyneee/crawler-service-backend:latest"
 
 # 镜像保存路径
 LOCAL_SAVE_DIR="/Users/pinjiehu/docker_images"
-IMAGE_FILE="${LOCAL_SAVE_DIR}/crawler_service_backend_latest.tar"
-HASH_FILE="${LOCAL_SAVE_DIR}/crawler_service_backend_latest.tar.sha256"
+IMAGE_FILE="${LOCAL_SAVE_DIR}/crawler-service-backend_latest.tar"
+HASH_FILE="${LOCAL_SAVE_DIR}/crawler-service-backend_latest.tar.sha256"
 
 # 服务器信息
 SERVER_USER="lighthouse"
 SERVER_IP="114.132.41.21"
 SERVER_IMAGE_DIR="/home/lighthouse/docker_images"
-SERVER_HASH_FILE="${SERVER_IMAGE_DIR}/crawler_service_backend_latest.tar.sha256_server_computed"
+SERVER_HASH_FILE="${SERVER_IMAGE_DIR}/crawler-service-backend_latest.tar.sha256_server_computed"
 
 # 日志文件路径
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -55,7 +55,7 @@ transfer_and_verify() {
     # 传输本地哈希文件
     log "INFO" "正在传输哈希文件 '$HASH_FILE' 到服务器..."
     {
-        rsync -av --progress "$HASH_FILE" "${SERVER_USER}@${SERVER_IP}:${dest_dir}/crawler_service_backend_latest.tar.sha256" 2>&1
+        rsync -av --progress "$HASH_FILE" "${SERVER_USER}@${SERVER_IP}:${dest_dir}/crawler-service-backend_latest.tar.sha256" 2>&1
     } | tee -a "$LOG_FILE"
     if [ ${PIPESTATUS[0]} -ne 0 ]; then
         log "ERROR" "哈希文件传输失败。"
@@ -66,8 +66,8 @@ transfer_and_verify() {
     # 在服务器上计算并比较哈希值
     log "INFO" "在服务器上验证镜像文件的完整性..."
     ssh "${SERVER_USER}@${SERVER_IP}" "
-        shasum -a 256 ${dest_dir}/crawler_service_backend_latest.tar | awk '{print \$1}' > ${dest_dir}/crawler_service_backend_latest.tar.sha256_computed
-        diff ${dest_dir}/crawler_service_backend_latest.tar.sha256 ${dest_dir}/crawler_service_backend_latest.tar.sha256_computed
+        shasum -a 256 ${dest_dir}/crawler-service-backend_latest.tar | awk '{print \$1}' > ${dest_dir}/crawler-service-backend_latest.tar.sha256_computed
+        diff ${dest_dir}/crawler-service-backend_latest.tar.sha256 ${dest_dir}/crawler-service-backend_latest.tar.sha256_computed
     " | tee -a "$LOG_FILE"
 
     if [ $? -eq 0 ]; then
