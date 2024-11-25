@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://host.docker.internal:5432/crawler_service_db
+    url: jdbc:postgresql://host.docker.internal:5432/crawler_service_db?sslmode=disable
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
   flyway:
@@ -9,3 +9,9 @@ spring:
     enabled: true
 swagger:
   enable: true
+
+external-services:
+  http:
+    backend-service:
+      url: tuantuan-backend-service
+      port: 8083

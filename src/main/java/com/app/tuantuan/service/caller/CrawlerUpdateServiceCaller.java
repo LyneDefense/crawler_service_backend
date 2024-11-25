@@ -1,5 +1,6 @@
 package com.app.tuantuan.service.caller;
 
+import com.app.tuantuan.config.ExternalServiceConfig;
 import com.app.tuantuan.model.dto.newhouse.SZNewHouseProjectDto;
 import com.app.tuantuan.service.caller.feignclient.CrawlerUpdateServiceClient;
 import feign.Feign;
@@ -8,12 +9,15 @@ import feign.Request;
 import feign.Retryer;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
+import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class CrawlerUpdateServiceCaller extends BaseHttpServiceCaller {
+
+  @Resource ExternalServiceConfig externalServiceConfig;
 
   private CrawlerUpdateServiceClient crawlerUpdateServiceClient;
 
@@ -23,7 +27,12 @@ public class CrawlerUpdateServiceCaller extends BaseHttpServiceCaller {
 
   @Override
   void init() {
-    final String baseUrl = String.format("http://%s:%d", "tuantuan-backend-service", 8083);
+    final String baseUrl =
+        String.format(
+            "http://%s:%d",
+            externalServiceConfig.getBackendServiceUrl(),
+            externalServiceConfig.getBackendServicePort());
+    log.info("[初始化CrawlerUpdateServiceCaller,baseUrl:{}]", baseUrl);
     this.crawlerUpdateServiceClient =
         new Feign.Builder()
             .retryer(Retryer.NEVER_RETRY)
