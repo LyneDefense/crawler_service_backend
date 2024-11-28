@@ -90,13 +90,7 @@ public class SZNewHouseMainPageRepository {
     }
   }
 
-  /**
-   * 根据请求参数选择新房主页面项。
-   *
-   * @param reqDto 请求参数对象
-   * @return 包含新房主页面项的 PageResult 对象
-   */
-  public PageResult<NewHouseMainPageItemDO> selectNewHouseMainPageItem(
+  private LambdaQueryWrapper<NewHouseMainPageItemDO> selectNewHouseListQuery(
       NewHouseMainPageReqDto reqDto) {
     LocalDate startDate = LocalDate.of(2020, 1, 1);
     LocalDate endDate = LocalDate.now();
@@ -113,7 +107,25 @@ public class SZNewHouseMainPageRepository {
     if (reqDto.getProjectName() != null) {
       query.eq(NewHouseMainPageItemDO::getProjectName, reqDto.getProjectName());
     }
-    return newHouseMainPageItemMapper.selectPage(reqDto, query);
+    return query;
+  }
+
+  /**
+   * 根据请求参数选择新房主页面项。
+   *
+   * @param reqDto 请求参数对象
+   * @return 包含新房主页面项的 PageResult 对象
+   */
+  public PageResult<NewHouseMainPageItemDO> selectNewHouseMainPageItem(
+      NewHouseMainPageReqDto reqDto) {
+    return newHouseMainPageItemMapper.selectPage(reqDto, selectNewHouseListQuery(reqDto));
+  }
+
+  public List<NewHouseMainPageItemDto> selectNewHouseMainPageItemList(
+      NewHouseMainPageReqDto reqDto) {
+    return newHouseMainPageItemMapper.selectList(selectNewHouseListQuery(reqDto)).stream()
+        .map(NewHouseMainPageItemDto::of)
+        .toList();
   }
 
   /**

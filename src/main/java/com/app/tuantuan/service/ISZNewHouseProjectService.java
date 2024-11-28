@@ -22,4 +22,6 @@ public interface ISZNewHouseProjectService {
   List<SZNewHouseProjectDto> crawlAndSaveMainPageItems(LocalDate startDate, LocalDate endDate);
 
   void crawlerTodayBeforeOneYearItems();
+
+  void syncCurrentItemsToBackendService(LocalDate startDate, LocalDate endDate);
 }

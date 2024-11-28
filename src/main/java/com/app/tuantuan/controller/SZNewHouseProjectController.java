@@ -2,10 +2,7 @@ package com.app.tuantuan.controller;
 
 import com.app.tuantuan.model.base.PageResult;
 import com.app.tuantuan.model.base.Resp;
-import com.app.tuantuan.model.dto.newhouse.NewHouseBuildingCrawlerReqDto;
-import com.app.tuantuan.model.dto.newhouse.NewHouseMainPageItemDto;
-import com.app.tuantuan.model.dto.newhouse.NewHouseMainPageReqDto;
-import com.app.tuantuan.model.dto.newhouse.SZNewHouseProjectDto;
+import com.app.tuantuan.model.dto.newhouse.*;
 import com.app.tuantuan.service.ISZNewHouseProjectService;
 import com.app.tuantuan.service.caller.CrawlerUpdateServiceCaller;
 import io.swagger.annotations.Api;
@@ -50,6 +47,12 @@ public class SZNewHouseProjectController {
   @PostMapping("/building/crawl/today")
   public Resp<Void> crawTodayToOneYearBeforeItem() {
     szNewHouseProjectService.crawlerTodayBeforeOneYearItems();
+    return Resp.ok();
+  }
+
+  @PostMapping("/building/crawl/sync")
+  public Resp<Void> syncCurrentItemsToBackendService(@RequestBody @Valid SyncMainPageReqDto dto) {
+    szNewHouseProjectService.syncCurrentItemsToBackendService(dto.getStartDate(), dto.getEndDate());
     return Resp.ok();
   }
 }

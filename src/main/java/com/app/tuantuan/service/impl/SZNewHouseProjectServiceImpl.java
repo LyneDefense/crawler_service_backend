@@ -33,6 +33,7 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
   @Resource SZNewHouseProjectRepository szNewHouseProjectRepository;
   @Resource SZNewHouseMainPageRepository newHouseMainPageRepository;
   @Resource CrawlerUpdateServiceCaller crawlerUpdateServiceCaller;
+  @Resource SZNewHouseMainPageRepository szNewHouseMainPageRepository;
 
   @Override
   public PageResult<NewHouseMainPageItemDto> selectNewHouseMainPageItem(
@@ -173,12 +174,20 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
 
   @Override
   public void crawlerTodayBeforeOneYearItems() {
-    StopWatch stopWatch = new StopWatch();
-    stopWatch.start();
     LocalDate startDate = LocalDate.now();
     LocalDate endDate = startDate.minusYears(1);
     List<SZNewHouseProjectDto> dtos = this.crawlAndSaveMainPageItems(endDate, startDate);
     log.info("[同步爬取信息到后端服务:{}->{}]", startDate, endDate);
+    dtos.forEach(e -> crawlerUpdateServiceCaller.updateCrawlerData(e));
+  }
+
+  @Override
+  public void syncCurrentItemsToBackendService(LocalDate startDate, LocalDate endDate) {
+    List<NewHouseMainPageItemDto> mainPageItems =
+        szNewHouseMainPageRepository.selectNewHouseMainPageItemList(
+            new NewHouseMainPageReqDto(startDate, endDate, null));
+    List<SZNewHouseProjectDto> dtos =
+        szNewHouseProjectRepository.selectNewHouseProjectByMainPageItems(mainPageItems);
     dtos.forEach(e -> crawlerUpdateServiceCaller.updateCrawlerData(e));
   }
 

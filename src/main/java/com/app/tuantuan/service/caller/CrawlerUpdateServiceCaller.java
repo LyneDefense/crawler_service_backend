@@ -47,8 +47,7 @@ public class CrawlerUpdateServiceCaller extends BaseHttpServiceCaller {
     try {
       this.crawlerUpdateServiceClient.updateCrawlerData(dto);
     } catch (FeignException e) {
-      log.error("请求失败: {}", e.contentUTF8()); // 打印响应内容
-      throw e;
+      log.error("[请求更新后端的基地和一户一价数据失败,楼盘名称:{},stackTrace:{}]", dto.getProjectName(), e.getMessage());
     }
   }
 }

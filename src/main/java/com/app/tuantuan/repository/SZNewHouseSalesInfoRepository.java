@@ -6,6 +6,7 @@ import com.app.tuantuan.model.dto.newhouse.NewHouseMainPageItemDto;
 import com.app.tuantuan.model.dto.newhouse.NewHouseSalesInfoDto;
 import com.app.tuantuan.model.entity.newhouse.NewHouseSalesInfoDO;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -16,14 +17,12 @@ public class SZNewHouseSalesInfoRepository {
 
   @Resource NewHouseSalesInfoMapper newHouseSalesInfoMapper;
 
-  public List<NewHouseSalesInfoDto> selectNewHouseSalesInfos(String projectId) {
-    return newHouseSalesInfoMapper
-        .selectList(
+  public Optional<NewHouseSalesInfoDto> selectNewHouseSalesInfos(String projectId) {
+    NewHouseSalesInfoDO newHouseSalesInfoDO =
+        newHouseSalesInfoMapper.selectOne(
             new LambdaQueryWrapperX<NewHouseSalesInfoDO>()
-                .eq(NewHouseSalesInfoDO::getProjectId, projectId))
-        .stream()
-        .map(NewHouseSalesInfoDto::of)
-        .toList();
+                .eq(NewHouseSalesInfoDO::getProjectId, projectId));
+    return Optional.ofNullable(newHouseSalesInfoDO).map(NewHouseSalesInfoDto::of);
   }
 
   public void deleteNewHouseSalesInfos(String projectId) {

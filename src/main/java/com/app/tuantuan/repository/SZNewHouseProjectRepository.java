@@ -1,5 +1,6 @@
 package com.app.tuantuan.repository;
 
+import com.app.tuantuan.enumeration.CrawlStatus;
 import com.app.tuantuan.model.dto.newhouse.*;
 import java.util.*;
 import javax.annotation.Resource;
@@ -47,5 +48,26 @@ public class SZNewHouseProjectRepository {
         mixedSalesInfo.getBuildingInfos(), updated);
     szNewHouseSalesInfoRepository.saveNewHouseSalesInfos(mixedSalesInfo.getSalesInfo(), updated);
     newHouseBuildingInfoRepository.saveNewHouseBuildingInfo(newHouseBuildingInfoDtos, updated);
+  }
+
+  public List<SZNewHouseProjectDto> selectNewHouseProjectByMainPageItems(
+      List<NewHouseMainPageItemDto> mainPageItemDtos) {
+    List<SZNewHouseProjectDto> projectDtos = new ArrayList<>();
+    for (NewHouseMainPageItemDto mainPageItemDto : mainPageItemDtos) {
+      List<NewHouseBuildingInfoDto> buildings =
+          newHouseBuildingInfoRepository.selectNewHouseBuildingInfo(mainPageItemDto.getId());
+      Optional<NewHouseSalesInfoDto> optionalNewHouseSalesInfoDto =
+          szNewHouseSalesInfoRepository.selectNewHouseSalesInfos(mainPageItemDto.getId());
+      NewHouseSalesInfoDto salesInfo = optionalNewHouseSalesInfoDto.orElse(null);
+      projectDtos.add(
+          SZNewHouseProjectDto.builder()
+              .status(CrawlStatus.SUCCESS)
+              .projectName(mainPageItemDto.getProjectName())
+              .mainPageItem(mainPageItemDto)
+              .buildings(buildings)
+              .salesInfo(salesInfo)
+              .build());
+    }
+    return projectDtos;
   }
 }
