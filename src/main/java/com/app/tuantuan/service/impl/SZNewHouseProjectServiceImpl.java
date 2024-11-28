@@ -11,6 +11,7 @@ import com.app.tuantuan.model.entity.newhouse.NewHouseMainPageItemDO;
 import com.app.tuantuan.repository.SZNewHouseMainPageRepository;
 import com.app.tuantuan.repository.SZNewHouseProjectRepository;
 import com.app.tuantuan.service.ISZNewHouseProjectService;
+import com.app.tuantuan.service.caller.CrawlerUpdateServiceCaller;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
   @Resource NewHouseBuildingInfoCrawler newHouseBuildingInfoCrawler;
   @Resource SZNewHouseProjectRepository szNewHouseProjectRepository;
   @Resource SZNewHouseMainPageRepository newHouseMainPageRepository;
+  @Resource CrawlerUpdateServiceCaller crawlerUpdateServiceCaller;
 
   @Override
   public PageResult<NewHouseMainPageItemDto> selectNewHouseMainPageItem(
@@ -107,7 +109,6 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
   }
 
   @Override
-  @Transactional
   public List<SZNewHouseProjectDto> crawlAndSaveProject(
       List<NewHouseMainPageItemDto> maiPageItems) {
     StopWatch stopWatch = new StopWatch();
@@ -133,7 +134,6 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
   }
 
   @Override
-  @Transactional
   public List<SZNewHouseProjectDto> crawlAndSaveMainPageItems(
       LocalDate startDate, LocalDate endDate) {
     StopWatch stopWatch = new StopWatch();
@@ -171,7 +171,16 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
     return projectDtos;
   }
 
-  public void updateBackendSiteInfo(SZNewHouseProjectDto project) {}
+  @Override
+  public void crawlerTodayBeforeOneYearItems() {
+    StopWatch stopWatch = new StopWatch();
+    stopWatch.start();
+    LocalDate startDate = LocalDate.now();
+    LocalDate endDate = startDate.minusYears(1);
+    List<SZNewHouseProjectDto> dtos = this.crawlAndSaveMainPageItems(endDate, startDate);
+    log.info("[同步爬取信息到后端服务:{}->{}]", startDate, endDate);
+    dtos.forEach(e -> crawlerUpdateServiceCaller.updateCrawlerData(e));
+  }
 
   private String calculateTimeCost(long totalTimeMillis) {
     long hours = totalTimeMillis / 3600000;

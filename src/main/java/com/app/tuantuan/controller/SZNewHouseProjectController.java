@@ -46,4 +46,10 @@ public class SZNewHouseProjectController {
     dtos.forEach(d -> crawlerUpdateServiceCaller.updateCrawlerData(d));
     return Resp.ok();
   }
+
+  @PostMapping("/building/crawl/today")
+  public Resp<Void> crawTodayToOneYearBeforeItem() {
+    szNewHouseProjectService.crawlerTodayBeforeOneYearItems();
+    return Resp.ok();
+  }
 }
