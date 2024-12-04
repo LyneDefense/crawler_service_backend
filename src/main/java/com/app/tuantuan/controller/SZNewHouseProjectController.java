@@ -39,8 +39,8 @@ public class SZNewHouseProjectController {
   public Resp<Void> crawlMainPageBuildings() {
     List<SZNewHouseProjectDto> dtos =
         szNewHouseProjectService.crawlAndSaveMainPageItems(
-            LocalDate.of(2024, 7, 24), LocalDate.of(2024, 7, 24));
-    dtos.forEach(d -> crawlerUpdateServiceCaller.updateCrawlerData(d));
+            LocalDate.of(2024, 11, 29), LocalDate.of(2024, 11, 29));
+    crawlerUpdateServiceCaller.updateCrawlerData(dtos.get(0));
     return Resp.ok();
   }
 

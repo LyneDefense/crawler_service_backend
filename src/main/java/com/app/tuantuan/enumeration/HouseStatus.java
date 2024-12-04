@@ -17,7 +17,9 @@ public enum HouseStatus {
   AUTOMATIC_LOCK("AUTOMATIC_LOCK", "自动锁定"),
   DISTRICT_LOCK("DISTRICT_LOCK", "区局锁定"),
   CITY_LOCK("CITY_LOCK", "市局锁定"),
-  JUDICIAL_SEIZURE("JUDICIAL_SEIZURE", "司法查封");
+  JUDICIAL_SEIZURE("JUDICIAL_SEIZURE", "司法查封"),
+  UNDER_CONSTRUCTION_MORTGAGE("UNDER_CONSTRUCTION_MORTGAGE", "在建抵押"),
+  SHARED_OWNERSHIP_HOUSING("SHARED_OWNERSHIP_HOUSING", "共有产权房");
 
   private final String name;
   @JsonValue @EnumValue private final String value;
