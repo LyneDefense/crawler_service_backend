@@ -2,6 +2,7 @@ package com.app.tuantuan.repository;
 
 import com.app.tuantuan.enumeration.CrawlStatus;
 import com.app.tuantuan.model.dto.newhouse.*;
+import java.time.LocalDate;
 import java.util.*;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;

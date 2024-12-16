@@ -124,12 +124,18 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
         statusList.stream().filter(status -> status == CrawlStatus.SKIPPED_NOT_RESIDENTIAL).count();
     long success = statusList.stream().filter(status -> status == CrawlStatus.SUCCESS).count();
     long failure = statusList.stream().filter(status -> status == CrawlStatus.FAILURE).count();
+    List<String> failureProjectNames =
+        projectDtos.stream()
+            .filter(e -> e.getStatus() == CrawlStatus.FAILURE)
+            .map(SZNewHouseProjectDto::getProjectName)
+            .toList();
     log.info(
-        "[批量爬取结果汇总] 总共需要处理楼盘数: {}, 跳过数: {}, 成功数: {}, 失败数: {}，总耗时: {}",
+        "[批量爬取结果汇总] 总共需要处理楼盘数: {}, 跳过数: {}, 成功数: {}, 失败数: {}，失败的楼盘:{},总耗时: {}",
         total,
         skipped,
         success,
         failure,
+        failureProjectNames,
         this.calculateTimeCost(stopWatch.getTotalTimeMillis()));
     return projectDtos;
   }
@@ -159,15 +165,20 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
     long failure = statusCountMap.getOrDefault(CrawlStatus.FAILURE, 0L);
 
     stopWatch.stop();
-
+    List<String> failureProjectNames =
+        projectDtos.stream()
+            .filter(e -> e.getStatus() == CrawlStatus.FAILURE)
+            .map(SZNewHouseProjectDto::getProjectName)
+            .toList();
     log.info(
-        "[保存 {} -> {} 一手房源公示首页信息完成, 总处理数:{}, 跳过数:{}, 成功数:{}, 失败数:{}, 总消耗时间:{}]",
+        "[保存 {} -> {} 一手房源公示首页信息完成, 总处理数:{}, 跳过数:{}, 成功数:{}, 失败数:{}, 失败楼盘{},总消耗时间:{}]",
         startDate,
         endDate,
         total,
         skipped,
         success,
         failure,
+        failureProjectNames,
         this.calculateTimeCost(stopWatch.getTotalTimeMillis()));
     return projectDtos;
   }

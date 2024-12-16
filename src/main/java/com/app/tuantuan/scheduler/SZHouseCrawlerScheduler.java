@@ -1,10 +1,6 @@
 package com.app.tuantuan.scheduler;
 
-import com.app.tuantuan.model.dto.newhouse.NewHouseMainPageItemDto;
-import com.app.tuantuan.model.dto.newhouse.NewHouseMainPageReqDto;
 import com.app.tuantuan.model.dto.newhouse.SZNewHouseProjectDto;
-import com.app.tuantuan.repository.SZNewHouseMainPageRepository;
-import com.app.tuantuan.repository.SZNewHouseProjectRepository;
 import com.app.tuantuan.service.*;
 import com.app.tuantuan.service.caller.CrawlerUpdateServiceCaller;
 import java.time.LocalDate;
@@ -14,7 +10,6 @@ import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StopWatch;
 
 @Slf4j
 @Component
@@ -26,8 +21,6 @@ public class SZHouseCrawlerScheduler {
   @Resource ISZUsedHouseDealsInfoService usedHouseDealsInfoService;
   @Resource ISZNewHouseProjectService szNewHouseProjectService;
   @Resource CrawlerUpdateServiceCaller crawlerUpdateServiceCaller;
-  @Resource SZNewHouseMainPageRepository szNewHouseMainPageRepository;
-  @Resource SZNewHouseProjectRepository szNewHouseProjectRepository;
 
   /** 区域房产交易数据定时任务：每天凌晨12点执行 */
   @Scheduled(cron = "0 0 0 * * ?")
@@ -67,23 +60,19 @@ public class SZHouseCrawlerScheduler {
   /** 一手房源公示首页信息爬取定时任务：每天凌晨1点，除了周天 */
   @Scheduled(cron = "0 0 1 * * 1-6")
   public void crawNewHouseMainPageItemsAndBuildingsDaily() {
-    StopWatch stopWatch = new StopWatch();
-    stopWatch.start();
-    LocalDate startDate = LocalDate.now().minusYears(1);
+    LocalDate startDate = LocalDate.now().minusMonths(6);
     log.info(
         "[执行每日一手房源公示首页信息爬取定时任务,爬取日期:{}-{},时间:{}]", startDate, LocalDate.now(), LocalDateTime.now());
     List<SZNewHouseProjectDto> dtos =
         szNewHouseProjectService.crawlAndSaveMainPageItems(startDate, LocalDate.now());
-    stopWatch.stop();
+    dtos.forEach(e -> crawlerUpdateServiceCaller.updateCrawlerData(e));
     log.info("[执行一手每日房源公示首页信息爬取定时任务成功,时间:{}]", LocalDateTime.now());
   }
 
   /** 一手房源公示首页信息爬取定时任务：每周天凌晨1点 */
   @Scheduled(cron = "0 0 1 * * 0")
   public void crawNewHouseMainPageItemsAndBuildingsDailyWeekly() {
-    StopWatch stopWatch = new StopWatch();
-    stopWatch.start();
-    LocalDate startDate = LocalDate.of(2020, 1, 1);
+    LocalDate startDate = LocalDate.now().minusYears(1);
     log.info(
         "[执行每周一手房源公示首页信息爬取定时任务成功,爬取日期:{}-{},时间:{}]",
         startDate,
@@ -91,17 +80,7 @@ public class SZHouseCrawlerScheduler {
         LocalDateTime.now());
     List<SZNewHouseProjectDto> dtos =
         szNewHouseProjectService.crawlAndSaveMainPageItems(startDate, LocalDate.now());
-    log.info("[执行每周一手房源公示首页信息爬取定时任务成功,时间:{}]", LocalDateTime.now());
-  }
-
-  /** 同步爬取数据到后端服务定时任务：每天凌晨3点 */
-  @Scheduled(cron = "0 0 3 * * *")
-  public void syncDateToBackendService() {
-    List<NewHouseMainPageItemDto> mainPageItems =
-        szNewHouseMainPageRepository.selectNewHouseMainPageItemList(
-            new NewHouseMainPageReqDto(LocalDate.now(), LocalDate.now().minusYears(1), null));
-    List<SZNewHouseProjectDto> dtos =
-        szNewHouseProjectRepository.selectNewHouseProjectByMainPageItems(mainPageItems);
     dtos.forEach(e -> crawlerUpdateServiceCaller.updateCrawlerData(e));
+    log.info("[执行每周一手房源公示首页信息爬取定时任务成功,时间:{}]", LocalDateTime.now());
   }
 }

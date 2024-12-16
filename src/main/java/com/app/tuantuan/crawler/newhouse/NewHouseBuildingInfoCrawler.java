@@ -82,7 +82,11 @@ public class NewHouseBuildingInfoCrawler {
 
         NewHouseBlockInfoDto blockInfoDto = new NewHouseBlockInfoDto();
         blockInfoDto.setBlockName(branchName.replaceAll("[\\[\\]]", "")); // 去除方括号
-        log.info("[当前解析到的座号为:{},开始解析该座下面的户型具体数据]", branchName);
+        log.info(
+            "[当前解析到的座号为:{}-{}-{},开始解析该座下面的户型具体数据]",
+            dto.getProjectName(),
+            dto.getBuildingName(),
+            branchName);
         // 构建完整的URL
         String branchUrl = BASE_URL + branchHref;
 
@@ -153,7 +157,13 @@ public class NewHouseBuildingInfoCrawler {
 
                 // 步骤5：抓取单元详细信息
                 String unitDetailUrl = BASE_URL + href;
-                unitInfoDto = fetchUnitDetail(httpClient, unitDetailUrl, unitInfoDto);
+                unitInfoDto =
+                    fetchUnitDetail(
+                        httpClient,
+                        unitDetailUrl,
+                        unitInfoDto,
+                        dto.getProjectName(),
+                        dto.getBuildingName());
 
                 // 添加到block信息中
                 blockInfoDto.getUnitInfoList().add(unitInfoDto);
@@ -257,9 +267,12 @@ public class NewHouseBuildingInfoCrawler {
     return result;
   }
 
-
   private NewHouseUnitInfoDto fetchUnitDetail(
-      CloseableHttpClient httpClient, String url, NewHouseUnitInfoDto unitInfoDto) {
+      CloseableHttpClient httpClient,
+      String url,
+      NewHouseUnitInfoDto unitInfoDto,
+      String projectName,
+      String buildingName) {
     HttpGet getDetail = new HttpGet(url);
     getDetail.setHeader(
         "User-Agent",
@@ -278,7 +291,11 @@ public class NewHouseBuildingInfoCrawler {
     // 步骤5.2：解析详细信息
     Elements tables = detailDoc.select("table.table.ta-c.table2.table-white");
     if (tables.isEmpty()) {
-      log.warn("[未找到房号为:{} 的详细信息表格,请核查，跳过解析]", unitInfoDto.getUnitSourceNumber());
+      log.warn(
+          "[未找到房号为:{}-{}-{} 的详细信息表格,请核查，跳过解析]",
+          projectName,
+          buildingName,
+          unitInfoDto.getUnitSourceNumber());
       return unitInfoDto;
     }
 

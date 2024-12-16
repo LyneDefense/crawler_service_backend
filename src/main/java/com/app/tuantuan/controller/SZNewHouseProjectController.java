@@ -5,11 +5,13 @@ import com.app.tuantuan.model.base.Resp;
 import com.app.tuantuan.model.dto.newhouse.*;
 import com.app.tuantuan.service.ISZNewHouseProjectService;
 import com.app.tuantuan.service.caller.CrawlerUpdateServiceCaller;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.Api;
 import java.time.LocalDate;
 import java.util.List;
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,10 +39,26 @@ public class SZNewHouseProjectController {
 
   @PutMapping("/building/test/crawl")
   public Resp<Void> crawlMainPageBuildings() {
+    LocalDate today = LocalDate.now();
     List<SZNewHouseProjectDto> dtos =
-        szNewHouseProjectService.crawlAndSaveMainPageItems(
-            LocalDate.of(2024, 11, 29), LocalDate.of(2024, 11, 29));
-    crawlerUpdateServiceCaller.updateCrawlerData(dtos.get(0));
+        szNewHouseProjectService.crawlAndSaveMainPageItems(today.minusMonths(1), today);
+    dtos.forEach(d -> crawlerUpdateServiceCaller.updateCrawlerData(d));
+    return Resp.ok();
+  }
+
+  @PutMapping("/building/crawl/date")
+  public Resp<Void> crawlProjectsByDate(
+      @RequestParam("start_date")
+          @DateTimeFormat(pattern = "yyyy-MM-dd")
+          @JsonFormat(pattern = "yyyy-MM-dd")
+          LocalDate startDate,
+      @RequestParam("end_date")
+          @DateTimeFormat(pattern = "yyyy-MM-dd")
+          @JsonFormat(pattern = "yyyy-MM-dd")
+          LocalDate endDate) {
+    List<SZNewHouseProjectDto> dtos =
+        szNewHouseProjectService.crawlAndSaveMainPageItems(startDate, endDate);
+    dtos.forEach(d -> crawlerUpdateServiceCaller.updateCrawlerData(d));
     return Resp.ok();
   }
 

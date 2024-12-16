@@ -61,6 +61,18 @@ public class SZNewHouseMainPageRepository {
         .toList();
   }
 
+  public List<NewHouseMainPageItemDto> selectMainPageItemByDate(
+      LocalDate startDate, LocalDate endDate) {
+    return newHouseMainPageItemMapper
+        .selectList(
+            new LambdaQueryWrapperX<NewHouseMainPageItemDO>()
+                .between(NewHouseMainPageItemDO::getApprovalDate, startDate, endDate)
+                .orderByDesc(NewHouseMainPageItemDO::getApprovalDate))
+        .stream()
+        .map(NewHouseMainPageItemDto::of)
+        .toList();
+  }
+
   /**
    * 查询最大的批准日期。
    *
