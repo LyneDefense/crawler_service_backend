@@ -7,11 +7,11 @@ import lombok.Getter;
 public enum DateFormat {
   YEAR("YEAR"),
   MONTH("MONTH"),
+  WEEK("WEEK"),
   DAY("DAY"),
   ;
 
-  @JsonValue
-  private final String name;
+  @JsonValue private final String name;
 
   DateFormat(String name) {
     this.name = name;

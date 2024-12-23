@@ -83,6 +83,16 @@ public class SZHouseDealStatisticServiceImpl implements ISZHouseDealStatisticSer
       return dtoList.stream()
           .sorted(Comparator.comparing(SZHouseDealStatisticDataDto::getDate).reversed())
           .collect(Collectors.toList());
+    } else if (dateFormat == DateFormat.WEEK) {
+      // 按周返回
+      return dtoList.stream()
+          .collect(Collectors.groupingBy(dto -> getStartOfWeek(dto.getDate(), startDate)))
+          .entrySet()
+          .stream()
+          .sorted(
+              Map.Entry.<LocalDate, List<SZHouseDealStatisticDataDto>>comparingByKey().reversed())
+          .map(entry -> aggregateData(entry.getValue(), entry.getKey()))
+          .collect(Collectors.toList());
     } else if (dateFormat == DateFormat.MONTH) {
       // 按月返回
       return dtoList.stream()
@@ -106,6 +116,12 @@ public class SZHouseDealStatisticServiceImpl implements ISZHouseDealStatisticSer
     } else {
       return new ArrayList<>();
     }
+  }
+
+  private LocalDate getStartOfWeek(LocalDate date, LocalDate startDate) {
+    long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(startDate, date);
+    long weeksBetween = daysBetween / 7;
+    return startDate.plusWeeks(weeksBetween);
   }
 
   /**
