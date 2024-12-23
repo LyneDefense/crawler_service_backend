@@ -1,5 +1,6 @@
 package com.app.tuantuan.controller;
 
+import com.app.tuantuan.enumeration.DateFormat;
 import com.app.tuantuan.model.base.Resp;
 import com.app.tuantuan.model.dto.statistic.SZHouseDealStatisticDataDto;
 import com.app.tuantuan.service.ISZHouseDealStatisticService;
@@ -33,7 +34,9 @@ public class SZHouseDealStatisticController {
       @RequestParam(name = "end_date")
           @DateTimeFormat(pattern = "yyyy-MM-dd")
           @ApiParam(required = true, value = "结束日期,yyyy-MM-dd")
-          LocalDate endDate) {
-    return Resp.data(houseDealStatisticService.findHouseDealStatisticByDate(startDate, endDate));
+          LocalDate endDate,
+      @RequestParam(name = "date_format", required = false) DateFormat dateFormat) {
+    return Resp.data(
+        houseDealStatisticService.findHouseDealStatisticByDate(startDate, endDate, dateFormat));
   }
 }
