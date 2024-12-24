@@ -122,6 +122,24 @@ public class SZSubscriptionOnlineSignInfoRepository {
         subscriptionOnlineSignInfoMapper.selectList(
             new LambdaQueryWrapperX<SZSubscriptionOnlineSignInfoDO>()
                 .eq(SZSubscriptionOnlineSignInfoDO::getDate, date));
+    return getSzSubscriptionOnlineSignInfoDtos(
+        subscriptionOnlineSignInfoDtos, subscriptionOnlineSignInfoDOS);
+  }
+
+  public List<SZSubscriptionOnlineSignInfoDto> selectSubscriptionOnlineSignInfoByDatePeriod(
+      LocalDate starDate, LocalDate endDate) {
+    List<SZSubscriptionOnlineSignInfoDto> subscriptionOnlineSignInfoDtos = new ArrayList<>();
+    List<SZSubscriptionOnlineSignInfoDO> subscriptionOnlineSignInfoDOS =
+        subscriptionOnlineSignInfoMapper.selectList(
+            new LambdaQueryWrapperX<SZSubscriptionOnlineSignInfoDO>()
+                .between(SZSubscriptionOnlineSignInfoDO::getDate, starDate, endDate));
+    return getSzSubscriptionOnlineSignInfoDtos(
+        subscriptionOnlineSignInfoDtos, subscriptionOnlineSignInfoDOS);
+  }
+
+  private List<SZSubscriptionOnlineSignInfoDto> getSzSubscriptionOnlineSignInfoDtos(
+      List<SZSubscriptionOnlineSignInfoDto> subscriptionOnlineSignInfoDtos,
+      List<SZSubscriptionOnlineSignInfoDO> subscriptionOnlineSignInfoDOS) {
     for (SZSubscriptionOnlineSignInfoDO subscriptionOnlineSignInfoDO :
         subscriptionOnlineSignInfoDOS) {
       String parentId = subscriptionOnlineSignInfoDO.getId();

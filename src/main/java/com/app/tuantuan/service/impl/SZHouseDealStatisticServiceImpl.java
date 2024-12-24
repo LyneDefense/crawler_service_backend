@@ -3,15 +3,17 @@ package com.app.tuantuan.service.impl;
 import com.app.tuantuan.config.mybatis.query.LambdaQueryWrapperX;
 import com.app.tuantuan.crawler.SZHouseDealsStatisticDataCrawler;
 import com.app.tuantuan.enumeration.DateFormat;
+import com.app.tuantuan.enumeration.SZDistrictEnum;
 import com.app.tuantuan.mapper.SZHouseDealStatisticDataMapper;
+import com.app.tuantuan.model.dto.onlinesign.presale.SZSubscriptionOnlineSignDetailDto;
 import com.app.tuantuan.model.dto.statistic.SZHouseDealStatisticDataDto;
+import com.app.tuantuan.model.dto.statistic.SZHouseDealStatisticIntegrationDto;
 import com.app.tuantuan.model.entity.statistic.SZHouseDealStatisticDataDO;
+import com.app.tuantuan.repository.SZSubscriptionOnlineSignInfoRepository;
 import com.app.tuantuan.service.ISZHouseDealStatisticService;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ public class SZHouseDealStatisticServiceImpl implements ISZHouseDealStatisticSer
 
   @Resource SZHouseDealStatisticDataMapper dealStatisticDataMapper;
   @Resource SZHouseDealsStatisticDataCrawler houseDealsDataCrawler;
+  @Resource SZSubscriptionOnlineSignInfoRepository subscriptionOnlineSignInfoRepository;
 
   @Override
   public void crawlAndSaveStatisticData() {
@@ -58,63 +61,115 @@ public class SZHouseDealStatisticServiceImpl implements ISZHouseDealStatisticSer
 
   @Override
   public List<SZHouseDealStatisticDataDto> findHouseDealStatisticByDate(
-      LocalDate startDate, LocalDate endDate, DateFormat dateFormat) {
+      LocalDate startDate, LocalDate endDate) {
 
     if (startDate.isAfter(endDate)) {
       return new ArrayList<>();
     }
 
     // 从数据库中查询数据
-    List<SZHouseDealStatisticDataDO> dataList =
+    return dealStatisticDataMapper
+        .selectList(
+            new LambdaQueryWrapperX<SZHouseDealStatisticDataDO>()
+                .betweenIfPresent(SZHouseDealStatisticDataDO::getDate, startDate, endDate)
+                .orderByDesc(SZHouseDealStatisticDataDO::getDate))
+        .stream()
+        .map(SZHouseDealStatisticDataDto::of)
+        .toList();
+  }
+
+  @Override
+  public List<SZHouseDealStatisticIntegrationDto> findHouseDealStatisticIntegrationByDate(
+      LocalDate startDate, LocalDate endDate, DateFormat dateFormat) {
+
+    // 查询房屋交易统计数据并转换为DTO，同时构建日期到DTO的映射
+    Map<LocalDate, SZHouseDealStatisticDataDto> dealStatisticDataDtoMap =
         dealStatisticDataMapper
             .selectList(
                 new LambdaQueryWrapperX<SZHouseDealStatisticDataDO>()
                     .betweenIfPresent(SZHouseDealStatisticDataDO::getDate, startDate, endDate)
                     .orderByDesc(SZHouseDealStatisticDataDO::getDate))
             .stream()
+            .map(SZHouseDealStatisticDataDto::of)
+            .collect(Collectors.toMap(SZHouseDealStatisticDataDto::getDate, Function.identity()));
+
+    // 查询订阅在线签约信息并构建日期到详细信息的映射
+    Map<LocalDate, SZSubscriptionOnlineSignDetailDto> subscriptionOnlineSignDetailDtoMap =
+        subscriptionOnlineSignInfoRepository
+            .selectSubscriptionOnlineSignInfoByDatePeriod(startDate, endDate)
+            .stream()
+            .filter(e -> e.getDistrict() == SZDistrictEnum.ALL)
+            .flatMap(
+                dto ->
+                    dto.getSubscriptionDetails().stream()
+                        .filter(SZSubscriptionOnlineSignDetailDto::isResidenceOnlineSign)
+                        .map(detailDto -> new AbstractMap.SimpleEntry<>(dto.getDate(), detailDto)))
+            .collect(
+                Collectors.toMap(
+                    Map.Entry::getKey, Map.Entry::getValue, (existing, replacement) -> existing));
+
+    // 合并交易数据和订阅数据
+    List<SZHouseDealStatisticIntegrationDto> integratedData =
+        dealStatisticDataDtoMap.entrySet().stream()
+            .map(
+                entry -> {
+                  LocalDate date = entry.getKey();
+                  SZHouseDealStatisticDataDto dealData = entry.getValue();
+                  SZSubscriptionOnlineSignDetailDto subscriptionData =
+                      subscriptionOnlineSignDetailDtoMap.get(date);
+
+                  return SZHouseDealStatisticIntegrationDto.builder()
+                      .date(date)
+                      .newHouseDealArea(dealData.getNewHouseDealArea())
+                      .newHouseDealSetCount(dealData.getNewHouseDealSetCount())
+                      .usedHouseDealArea(dealData.getUsedHouseDealArea())
+                      .usedHouseDealCount(dealData.getUsedHouseDealCount())
+                      .onlineSubscriptionArea(
+                          subscriptionData != null ? subscriptionData.getSubscriptionArea() : null)
+                      .onlineSubscriptionCount(
+                          subscriptionData != null ? subscriptionData.getSubscriptionCount() : null)
+                      .build();
+                })
             .toList();
 
-    // 转换为 DTO
-    List<SZHouseDealStatisticDataDto> dtoList =
-        dataList.stream().map(SZHouseDealStatisticDataDto::of).toList();
+    Comparator<LocalDate> localDateComparator = Comparator.reverseOrder();
+    Comparator<SZHouseDealStatisticIntegrationDto> dateComparator =
+        Comparator.comparing(SZHouseDealStatisticIntegrationDto::getDate).reversed();
 
-    if (dateFormat == null || dateFormat == DateFormat.DAY) {
-      // 按天返回
-      return dtoList.stream()
-          .sorted(Comparator.comparing(SZHouseDealStatisticDataDto::getDate).reversed())
-          .collect(Collectors.toList());
-    } else if (dateFormat == DateFormat.WEEK) {
-      // 按周返回
-      return dtoList.stream()
-          .collect(Collectors.groupingBy(dto -> getStartOfWeek(dto.getDate(), startDate)))
-          .entrySet()
-          .stream()
-          .sorted(
-              Map.Entry.<LocalDate, List<SZHouseDealStatisticDataDto>>comparingByKey().reversed())
-          .map(entry -> aggregateData(entry.getValue(), entry.getKey()))
-          .collect(Collectors.toList());
-    } else if (dateFormat == DateFormat.MONTH) {
-      // 按月返回
-      return dtoList.stream()
-          .collect(Collectors.groupingBy(dto -> dto.getDate().withDayOfMonth(1)))
-          .entrySet()
-          .stream()
-          .sorted(
-              Map.Entry.<LocalDate, List<SZHouseDealStatisticDataDto>>comparingByKey().reversed())
-          .map(entry -> aggregateData(entry.getValue(), entry.getKey()))
-          .collect(Collectors.toList());
-    } else if (dateFormat == DateFormat.YEAR) {
-      // 按年返回
-      return dtoList.stream()
-          .collect(Collectors.groupingBy(dto -> dto.getDate().withDayOfYear(1)))
-          .entrySet()
-          .stream()
-          .sorted(
-              Map.Entry.<LocalDate, List<SZHouseDealStatisticDataDto>>comparingByKey().reversed())
-          .map(entry -> aggregateData(entry.getValue(), entry.getKey()))
-          .collect(Collectors.toList());
-    } else {
-      return new ArrayList<>();
+    switch (dateFormat) {
+      case WEEK:
+        return integratedData.stream()
+            .collect(Collectors.groupingBy(dto -> getStartOfWeek(dto.getDate(), startDate)))
+            .entrySet()
+            .stream()
+            .sorted(
+                Map.Entry.<LocalDate, List<SZHouseDealStatisticIntegrationDto>>comparingByKey(
+                    localDateComparator))
+            .map(entry -> aggregateData(entry.getValue(), entry.getKey()))
+            .collect(Collectors.toList());
+      case MONTH:
+        return integratedData.stream()
+            .collect(Collectors.groupingBy(dto -> dto.getDate().withDayOfMonth(1)))
+            .entrySet()
+            .stream()
+            .sorted(
+                Map.Entry.<LocalDate, List<SZHouseDealStatisticIntegrationDto>>comparingByKey(
+                    localDateComparator))
+            .map(entry -> aggregateData(entry.getValue(), entry.getKey()))
+            .collect(Collectors.toList());
+      case YEAR:
+        return integratedData.stream()
+            .collect(Collectors.groupingBy(dto -> dto.getDate().withDayOfYear(1)))
+            .entrySet()
+            .stream()
+            .sorted(
+                Map.Entry.<LocalDate, List<SZHouseDealStatisticIntegrationDto>>comparingByKey(
+                    localDateComparator))
+            .map(entry -> aggregateData(entry.getValue(), entry.getKey()))
+            .collect(Collectors.toList());
+      case DAY:
+      default:
+        return integratedData.stream().sorted(dateComparator).collect(Collectors.toList());
     }
   }
 
@@ -131,26 +186,77 @@ public class SZHouseDealStatisticServiceImpl implements ISZHouseDealStatisticSer
    * @param aggregateDate 聚合后的日期（按月或按年）
    * @return 聚合后的 DTO 对象
    */
-  private SZHouseDealStatisticDataDto aggregateData(
-      List<SZHouseDealStatisticDataDto> dtoList, LocalDate aggregateDate) {
-    SZHouseDealStatisticDataDto aggregated = new SZHouseDealStatisticDataDto();
+  private SZHouseDealStatisticIntegrationDto aggregateData(
+      List<SZHouseDealStatisticIntegrationDto> dtoList, LocalDate aggregateDate) {
+
+    SZHouseDealStatisticIntegrationDto aggregated = new SZHouseDealStatisticIntegrationDto();
     aggregated.setDate(aggregateDate); // 设置为聚合后的日期（月份或年份的第一天）
 
-    // 聚合字段：求和
-    double totalNewHouseDealArea =
-        dtoList.stream().mapToDouble(SZHouseDealStatisticDataDto::getNewHouseDealArea).sum();
-    int totalNewHouseDealSetCount =
-        dtoList.stream().mapToInt(SZHouseDealStatisticDataDto::getNewHouseDealSetCount).sum();
-    double totalUsedHouseDealArea =
-        dtoList.stream().mapToDouble(SZHouseDealStatisticDataDto::getUsedHouseDealArea).sum();
-    int totalUsedHouseDealCount =
-        dtoList.stream().mapToInt(SZHouseDealStatisticDataDto::getUsedHouseDealCount).sum();
+    // 使用辅助方法进行汇总
+    Double totalNewHouseDealArea =
+        sumDoubles(dtoList, SZHouseDealStatisticIntegrationDto::getNewHouseDealArea);
 
+    Integer totalNewHouseDealSetCount =
+        sumIntegers(dtoList, SZHouseDealStatisticIntegrationDto::getNewHouseDealSetCount);
+
+    Double totalUsedHouseDealArea =
+        sumDoubles(dtoList, SZHouseDealStatisticIntegrationDto::getUsedHouseDealArea);
+
+    Integer totalUsedHouseDealCount =
+        sumIntegers(dtoList, SZHouseDealStatisticIntegrationDto::getUsedHouseDealCount);
+
+    Double totalOnlineSubscriptionArea =
+        sumDoubles(dtoList, SZHouseDealStatisticIntegrationDto::getOnlineSubscriptionArea);
+
+    Integer totalOnlineSubscriptionCount =
+        sumIntegers(dtoList, SZHouseDealStatisticIntegrationDto::getOnlineSubscriptionCount);
+
+    // 设置聚合后的值
     aggregated.setNewHouseDealArea(totalNewHouseDealArea);
     aggregated.setNewHouseDealSetCount(totalNewHouseDealSetCount);
     aggregated.setUsedHouseDealArea(totalUsedHouseDealArea);
     aggregated.setUsedHouseDealCount(totalUsedHouseDealCount);
+    aggregated.setOnlineSubscriptionArea(totalOnlineSubscriptionArea);
+    aggregated.setOnlineSubscriptionCount(totalOnlineSubscriptionCount);
 
     return aggregated;
+  }
+
+  /**
+   * 辅助方法：汇总 Integer 类型字段
+   *
+   * @param list DTO 列表
+   * @param getter 获取 Integer 值的函数
+   * @return 汇总的 Integer 值，若所有值均为 null，则返回 null
+   */
+  private Integer sumIntegers(
+      List<SZHouseDealStatisticIntegrationDto> list,
+      Function<SZHouseDealStatisticIntegrationDto, Integer> getter) {
+    List<Integer> nonNullValues = list.stream().map(getter).filter(Objects::nonNull).toList();
+
+    if (nonNullValues.isEmpty()) {
+      return null;
+    }
+
+    return nonNullValues.stream().mapToInt(Integer::intValue).sum();
+  }
+
+  /**
+   * 辅助方法：汇总 Double 类型字段
+   *
+   * @param list DTO 列表
+   * @param getter 获取 Double 值的函数
+   * @return 汇总的 Double 值，若所有值均为 null，则返回 null
+   */
+  private Double sumDoubles(
+      List<SZHouseDealStatisticIntegrationDto> list,
+      Function<SZHouseDealStatisticIntegrationDto, Double> getter) {
+    List<Double> nonNullValues = list.stream().map(getter).filter(Objects::nonNull).toList();
+
+    if (nonNullValues.isEmpty()) {
+      return null;
+    }
+
+    return nonNullValues.stream().mapToDouble(Double::doubleValue).sum();
   }
 }

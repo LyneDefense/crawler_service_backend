@@ -52,4 +52,8 @@ public class SZSubscriptionOnlineSignDetailDto {
         .subscriptionArea(entity.getSubscriptionArea())
         .build();
   }
+
+  public boolean isResidenceOnlineSign(){
+    return "住宅".equals(this.category);
+  }
 }

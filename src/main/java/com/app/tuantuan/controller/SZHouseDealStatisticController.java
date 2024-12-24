@@ -3,6 +3,7 @@ package com.app.tuantuan.controller;
 import com.app.tuantuan.enumeration.DateFormat;
 import com.app.tuantuan.model.base.Resp;
 import com.app.tuantuan.model.dto.statistic.SZHouseDealStatisticDataDto;
+import com.app.tuantuan.model.dto.statistic.SZHouseDealStatisticIntegrationDto;
 import com.app.tuantuan.service.ISZHouseDealStatisticService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
@@ -34,9 +35,23 @@ public class SZHouseDealStatisticController {
       @RequestParam(name = "end_date")
           @DateTimeFormat(pattern = "yyyy-MM-dd")
           @ApiParam(required = true, value = "结束日期,yyyy-MM-dd")
+          LocalDate endDate) {
+    return Resp.data(houseDealStatisticService.findHouseDealStatisticByDate(startDate, endDate));
+  }
+
+  @GetMapping("/integration/get")
+  public Resp<List<SZHouseDealStatisticIntegrationDto>> findHouseDealStatisticIntegrationByDate(
+      @RequestParam(name = "start_date")
+          @DateTimeFormat(pattern = "yyyy-MM-dd")
+          @ApiParam(required = true, value = "开始日期,yyyy-MM-dd")
+          LocalDate startDate,
+      @RequestParam(name = "end_date")
+          @DateTimeFormat(pattern = "yyyy-MM-dd")
+          @ApiParam(required = true, value = "结束日期,yyyy-MM-dd")
           LocalDate endDate,
       @RequestParam(name = "date_format", required = false) DateFormat dateFormat) {
     return Resp.data(
-        houseDealStatisticService.findHouseDealStatisticByDate(startDate, endDate, dateFormat));
+        houseDealStatisticService.findHouseDealStatisticIntegrationByDate(
+            startDate, endDate, dateFormat));
   }
 }
