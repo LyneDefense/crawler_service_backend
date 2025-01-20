@@ -35,19 +35,19 @@ public class NewHouseUnitInfoDO extends BaseDO {
 
   private Boolean accessibility;
 
-  private double constructionPrice;
+  private Double constructionPrice;
 
-  private double grossFloorPrice;
+  private Double grossFloorPrice;
 
-  private double preSaleConstructionArea;
+  private Double preSaleConstructionArea;
 
-  private double preSaleGrossFloorArea;
+  private Double preSaleGrossFloorArea;
 
-  private double preSaleSharedArea;
+  private Double preSaleSharedArea;
 
-  private double preCompletionConstructionArea;
+  private Double preCompletionConstructionArea;
 
-  private double preCompletionGrossFloorArea;
+  private Double preCompletionGrossFloorArea;
 
-  private double preCompletionSharedArea;
+  private Double preCompletionSharedArea;
 }

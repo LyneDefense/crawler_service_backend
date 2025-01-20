@@ -17,6 +17,8 @@ public interface ISZNewHouseProjectService {
    */
   PageResult<NewHouseMainPageItemDto> selectNewHouseMainPageItem(NewHouseMainPageReqDto reqDto);
 
+  List<NewHouseMainPageItemDto> crawlMainPageItems(NewHouseMainPageReqDto dto);
+
   List<SZNewHouseProjectDto> crawlAndSaveProject(List<NewHouseMainPageItemDto> maiPageItems);
 
   List<SZNewHouseProjectDto> crawlAndSaveMainPageItems(LocalDate startDate, LocalDate endDate);

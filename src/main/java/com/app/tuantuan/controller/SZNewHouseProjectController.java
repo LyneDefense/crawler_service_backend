@@ -28,6 +28,12 @@ public class SZNewHouseProjectController {
     return Resp.data(szNewHouseProjectService.selectNewHouseMainPageItem(reqDto));
   }
 
+  @PostMapping("/main_page/crawl")
+  public Resp<List<NewHouseMainPageItemDto>> crawlNewHouseMainPageItems(
+      @RequestBody @Valid NewHouseMainPageReqDto dto) {
+    return Resp.data(szNewHouseProjectService.crawlMainPageItems(dto));
+  }
+
   @PutMapping("/building/crawl")
   public Resp<Void> crawlAndSaveBuildings(
       @RequestBody @Valid NewHouseBuildingCrawlerReqDto reqDto) {

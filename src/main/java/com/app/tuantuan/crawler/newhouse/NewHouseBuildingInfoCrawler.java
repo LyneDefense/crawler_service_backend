@@ -157,13 +157,12 @@ public class NewHouseBuildingInfoCrawler {
 
                 // 步骤5：抓取单元详细信息
                 String unitDetailUrl = BASE_URL + href;
-                unitInfoDto =
-                    fetchUnitDetail(
-                        httpClient,
-                        unitDetailUrl,
-                        unitInfoDto,
-                        dto.getProjectName(),
-                        dto.getBuildingName());
+                fetchUnitDetail(
+                    httpClient,
+                    unitDetailUrl,
+                    unitInfoDto,
+                    dto.getProjectName(),
+                    dto.getBuildingName());
 
                 // 添加到block信息中
                 blockInfoDto.getUnitInfoList().add(unitInfoDto);
@@ -267,7 +266,7 @@ public class NewHouseBuildingInfoCrawler {
     return result;
   }
 
-  private NewHouseUnitInfoDto fetchUnitDetail(
+  private void fetchUnitDetail(
       CloseableHttpClient httpClient,
       String url,
       NewHouseUnitInfoDto unitInfoDto,
@@ -296,7 +295,7 @@ public class NewHouseBuildingInfoCrawler {
           projectName,
           buildingName,
           unitInfoDto.getUnitSourceNumber());
-      return unitInfoDto;
+      return;
     }
 
     // 假设只有一个表格
@@ -338,16 +337,14 @@ public class NewHouseBuildingInfoCrawler {
           // 处理“拟售价格”字段，有两个价格值
           if (i + 1 < tdElements.size()) {
             String value1 = tdElements.get(i + 1).html().trim();
-            double constructionPrice = parsePrice(value1);
-            unitInfoDto.setConstructionPrice(constructionPrice);
+            unitInfoDto.setConstructionPrice(parsePrice(value1));
           } else {
             log.warn("没有找到‘拟售价格’对应的key: {}，请核查", key);
           }
 
           if (i + 2 < tdElements.size()) {
             String value2 = tdElements.get(i + 2).html().trim();
-            double grossFloorPrice = parsePrice(value2);
-            unitInfoDto.setGrossFloorPrice(grossFloorPrice);
+            unitInfoDto.setGrossFloorPrice(parsePrice(value2));
           } else {
             log.warn("没有找到‘拟售价格-按套内面积计’对应的key: {}，请核查", key);
           }
@@ -378,31 +375,25 @@ public class NewHouseBuildingInfoCrawler {
 
             case "建筑面积":
               if ("preSale".equals(currentSection)) {
-                double preSaleConstructionArea = parseArea(value);
-                unitInfoDto.setPreSaleConstructionArea(preSaleConstructionArea);
+                unitInfoDto.setPreSaleConstructionArea(parseArea(value));
               } else if ("preCompletion".equals(currentSection)) {
-                double preCompletionConstructionArea = parseArea(value);
-                unitInfoDto.setPreCompletionConstructionArea(preCompletionConstructionArea);
+                unitInfoDto.setPreCompletionConstructionArea(parseArea(value));
               }
               break;
 
             case "套内建筑面积":
               if ("preSale".equals(currentSection)) {
-                double preSaleGrossFloorArea = parseArea(value);
-                unitInfoDto.setPreSaleGrossFloorArea(preSaleGrossFloorArea);
+                unitInfoDto.setPreSaleGrossFloorArea(parseArea(value));
               } else if ("preCompletion".equals(currentSection)) {
-                double preCompletionGrossFloorArea = parseArea(value);
-                unitInfoDto.setPreCompletionGrossFloorArea(preCompletionGrossFloorArea);
+                unitInfoDto.setPreCompletionGrossFloorArea(parseArea(value));
               }
               break;
 
             case "分摊面积":
               if ("preSale".equals(currentSection)) {
-                double preSaleSharedArea = parseArea(value);
-                unitInfoDto.setPreSaleSharedArea(preSaleSharedArea);
+                unitInfoDto.setPreSaleSharedArea(parseArea(value));
               } else if ("preCompletion".equals(currentSection)) {
-                double preCompletionSharedArea = parseArea(value);
-                unitInfoDto.setPreCompletionSharedArea(preCompletionSharedArea);
+                unitInfoDto.setPreCompletionSharedArea(parseArea(value));
               }
               break;
             default:
@@ -413,19 +404,17 @@ public class NewHouseBuildingInfoCrawler {
         }
       }
     }
-
-    return unitInfoDto;
   }
 
-  private double parsePrice(String priceText) {
+  private Double parsePrice(String priceText) {
     // 示例："132771元/平方米" -> 132771
     priceText = priceText.replaceAll("[^0-9.]", "");
-    return priceText.isEmpty() ? 0.0 : Double.parseDouble(priceText);
+    return priceText.isEmpty() ? null : Double.parseDouble(priceText);
   }
 
-  private double parseArea(String areaText) {
+  private Double parseArea(String areaText) {
     // 示例："370.06平方米" -> 370.06
     areaText = areaText.replaceAll("[^0-9.]", "");
-    return areaText.isEmpty() ? 0.0 : Double.parseDouble(areaText);
+    return areaText.isEmpty() ? null : Double.parseDouble(areaText);
   }
 }

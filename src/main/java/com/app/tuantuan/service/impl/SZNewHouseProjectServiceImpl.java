@@ -14,6 +14,7 @@ import com.app.tuantuan.service.ISZNewHouseProjectService;
 import com.app.tuantuan.service.caller.CrawlerUpdateServiceCaller;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,6 +54,12 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
         newHouseMainPageRepository.selectNewHouseMainPageItem(reqDto);
     return new PageResult<>(
         entities.getList().stream().map(NewHouseMainPageItemDto::of).toList(), entities.getTotal());
+  }
+
+  @Override
+  public List<NewHouseMainPageItemDto> crawlMainPageItems(NewHouseMainPageReqDto dto) {
+    return newHouseMainPageCrawler.crawl(
+        new NewHouseMainPageReqDto(dto.getStartDate(), dto.getEndDate(), dto.getProjectName()));
   }
 
   @Transactional
@@ -104,6 +111,7 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
           "[保存一手房源公示首页信息失败, 楼盘名称:{}, 预售证号:{}]",
           maiPageItem.getProjectName(),
           maiPageItem.getPreSaleNumber());
+      log.error(Arrays.toString(e.getStackTrace()));
       return new SZNewHouseProjectDto(
           CrawlStatus.FAILURE, maiPageItem.getProjectName(), maiPageItem, null, null);
     }
