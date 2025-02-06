@@ -10,6 +10,8 @@ import feign.Retryer;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import javax.annotation.Resource;
+
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -42,6 +44,7 @@ public class CrawlerUpdateServiceCaller extends BaseHttpServiceCaller {
             .target(CrawlerUpdateServiceClient.class, baseUrl);
   }
 
+  @SneakyThrows
   public void updateCrawlerData(SZNewHouseProjectDto dto) {
     log.info("[请求更新后端的基地和一户一价数据,楼盘名称:{}]", dto.getProjectName());
     try {
