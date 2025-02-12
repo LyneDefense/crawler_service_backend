@@ -1,6 +1,7 @@
 package com.app.tuantuan.model.entity.newhouse;
 
 
+import com.app.tuantuan.enumeration.SZDistrictEnum;
 import com.app.tuantuan.model.entity.BaseDO;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -35,7 +36,7 @@ public class NewHouseMainPageItemDO extends BaseDO {
 
     private String developer;
 
-    private String district;
+    private SZDistrictEnum district;
 
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)

@@ -2,6 +2,7 @@ package com.app.tuantuan.enumeration;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import lombok.Getter;
 /** 深圳各区的枚举类 */
 @Getter
 @AllArgsConstructor
+@JsonFormat(shape = JsonFormat.Shape.STRING)
 public enum SZDistrictEnum {
   UNKNOWN("UNKNOWN", "未知"),
   ALL("ALL", "全市"),
@@ -26,7 +28,9 @@ public enum SZDistrictEnum {
   PING_SHAN("PING_SHAN", "坪山"),
   DA_PENG("DA_PENG", "大鹏新"),
   NAN_SHAN("NAN_SHAN", "南山"),
-  SHEN_SHAN("SHEN_SHAN", "深汕");
+  SHEN_SHAN("SHEN_SHAN", "深汕"),
+  QIAN_HAI("QIAN_HAI", "前海"),
+  ;
 
   private static final Map<String, SZDistrictEnum> VALUE_MAP =
       Stream.of(values()).collect(Collectors.toMap(SZDistrictEnum::getValue, e -> e));
@@ -35,9 +39,17 @@ public enum SZDistrictEnum {
 
   @JsonValue @EnumValue private final String value;
 
-  @JsonCreator
   public static SZDistrictEnum fromValue(String value) {
     return VALUE_MAP.getOrDefault(value, UNKNOWN);
+  }
+
+  public static SZDistrictEnum fromName(String name) {
+    for (SZDistrictEnum district : SZDistrictEnum.values()) {
+      if (district.getName().equals(name)) {
+        return district;
+      }
+    }
+    return UNKNOWN;
   }
 
   public static List<SZDistrictEnum> withoutUnknownDistricts() {

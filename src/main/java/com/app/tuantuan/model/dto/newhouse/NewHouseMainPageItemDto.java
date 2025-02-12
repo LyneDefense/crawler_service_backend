@@ -1,5 +1,6 @@
 package com.app.tuantuan.model.dto.newhouse;
 
+import com.app.tuantuan.enumeration.SZDistrictEnum;
 import com.app.tuantuan.model.entity.newhouse.NewHouseMainPageItemDO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -42,7 +43,7 @@ public class NewHouseMainPageItemDto {
 
   @ApiModelProperty("区域")
   @NotNull
-  private String district;
+  private SZDistrictEnum district;
 
   @ApiModelProperty("批准日期")
   @JsonDeserialize(using = LocalDateDeserializer.class)

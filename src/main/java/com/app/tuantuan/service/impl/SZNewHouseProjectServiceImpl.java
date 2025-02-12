@@ -58,8 +58,7 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
 
   @Override
   public List<NewHouseMainPageItemDto> crawlMainPageItems(NewHouseMainPageReqDto dto) {
-    return newHouseMainPageCrawler.crawl(
-        new NewHouseMainPageReqDto(dto.getStartDate(), dto.getEndDate(), dto.getProjectName()));
+    return newHouseMainPageCrawler.crawl(dto);
   }
 
   @Transactional
@@ -204,7 +203,7 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
   public void syncCurrentItemsToBackendService(LocalDate startDate, LocalDate endDate) {
     List<NewHouseMainPageItemDto> mainPageItems =
         szNewHouseMainPageRepository.selectNewHouseMainPageItemList(
-            new NewHouseMainPageReqDto(startDate, endDate, null));
+            new NewHouseMainPageReqDto(startDate, endDate, null,null));
     List<SZNewHouseProjectDto> dtos =
         szNewHouseProjectRepository.selectNewHouseProjectByMainPageItems(mainPageItems);
     dtos.forEach(e -> crawlerUpdateServiceCaller.updateCrawlerData(e));

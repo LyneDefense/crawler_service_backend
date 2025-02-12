@@ -1,5 +1,6 @@
 package com.app.tuantuan.repository;
 
+import cn.hutool.core.util.StrUtil;
 import com.app.tuantuan.config.mybatis.query.LambdaQueryWrapperX;
 import com.app.tuantuan.mapper.NewHouseMainPageItemMapper;
 import com.app.tuantuan.model.base.PageResult;
@@ -104,20 +105,23 @@ public class SZNewHouseMainPageRepository {
 
   private LambdaQueryWrapper<NewHouseMainPageItemDO> selectNewHouseListQuery(
       NewHouseMainPageReqDto reqDto) {
-    LocalDate startDate = LocalDate.of(2020, 1, 1);
+    LocalDate startDate = LocalDate.of(2010, 1, 1);
     LocalDate endDate = LocalDate.now();
-    if (reqDto.getStartDate().isAfter(startDate)) {
+    if (reqDto.getStartDate() != null && reqDto.getStartDate().isAfter(startDate)) {
       startDate = reqDto.getStartDate();
     }
-    if (reqDto.getEndDate().isBefore(endDate)) {
+    if (reqDto.getEndDate() != null && reqDto.getEndDate().isBefore(endDate)) {
       endDate = reqDto.getEndDate();
     }
     LambdaQueryWrapper<NewHouseMainPageItemDO> query =
         new LambdaQueryWrapperX<NewHouseMainPageItemDO>()
             .between(NewHouseMainPageItemDO::getApprovalDate, startDate, endDate)
             .orderByDesc(NewHouseMainPageItemDO::getApprovalDate);
-    if (reqDto.getProjectName() != null) {
+    if (!StrUtil.isEmpty(reqDto.getProjectName())) {
       query.eq(NewHouseMainPageItemDO::getProjectName, reqDto.getProjectName());
+    }
+    if (reqDto.getDistrict() != null) {
+      query.eq(NewHouseMainPageItemDO::getDistrict, reqDto.getDistrict());
     }
     return query;
   }

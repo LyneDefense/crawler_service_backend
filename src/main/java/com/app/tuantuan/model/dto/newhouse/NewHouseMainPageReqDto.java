@@ -1,5 +1,6 @@
 package com.app.tuantuan.model.dto.newhouse;
 
+import com.app.tuantuan.enumeration.SZDistrictEnum;
 import com.app.tuantuan.model.base.PageParam;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -20,15 +21,17 @@ public class NewHouseMainPageReqDto extends PageParam {
   @JsonDeserialize(using = LocalDateDeserializer.class)
   @JsonSerialize(using = LocalDateSerializer.class)
   @JsonFormat(pattern = "yyyy-MM-dd")
-  @NotNull
   private LocalDate startDate;
 
-  @NotNull
+
   @JsonDeserialize(using = LocalDateDeserializer.class)
   @JsonSerialize(using = LocalDateSerializer.class)
+  @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDate endDate;
 
   private String projectName;
+
+  private SZDistrictEnum district;
 
   public NewHouseMainPageReqDto(LocalDate startDate, LocalDate endDate) {
     this.startDate = startDate;

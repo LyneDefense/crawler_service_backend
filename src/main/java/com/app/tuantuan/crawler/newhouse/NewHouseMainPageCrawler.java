@@ -1,6 +1,7 @@
 package com.app.tuantuan.crawler.newhouse;
 
 import com.app.tuantuan.constant.CustomException;
+import com.app.tuantuan.enumeration.SZDistrictEnum;
 import com.app.tuantuan.model.dto.newhouse.NewHouseMainPageItemDto;
 import com.app.tuantuan.model.dto.newhouse.NewHouseMainPageReqDto;
 import java.nio.charset.StandardCharsets;
@@ -218,7 +219,7 @@ public class NewHouseMainPageCrawler {
                   projectName,
                   projectNameLink,
                   developer,
-                  district,
+                  SZDistrictEnum.fromValue(district),
                   approvalDate);
           projects.add(project);
         } catch (Exception e) {
