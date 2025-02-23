@@ -136,41 +136,39 @@ public class SZHouseDealStatisticServiceImpl implements ISZHouseDealStatisticSer
     Comparator<SZHouseDealStatisticIntegrationDto> dateComparator =
         Comparator.comparing(SZHouseDealStatisticIntegrationDto::getDate).reversed();
 
-    switch (dateFormat) {
-      case WEEK:
-        return integratedData.stream()
-            .collect(Collectors.groupingBy(dto -> getStartOfWeek(dto.getDate(), startDate)))
-            .entrySet()
-            .stream()
-            .sorted(
-                Map.Entry.<LocalDate, List<SZHouseDealStatisticIntegrationDto>>comparingByKey(
-                    localDateComparator))
-            .map(entry -> aggregateData(entry.getValue(), entry.getKey()))
-            .collect(Collectors.toList());
-      case MONTH:
-        return integratedData.stream()
-            .collect(Collectors.groupingBy(dto -> dto.getDate().withDayOfMonth(1)))
-            .entrySet()
-            .stream()
-            .sorted(
-                Map.Entry.<LocalDate, List<SZHouseDealStatisticIntegrationDto>>comparingByKey(
-                    localDateComparator))
-            .map(entry -> aggregateData(entry.getValue(), entry.getKey()))
-            .collect(Collectors.toList());
-      case YEAR:
-        return integratedData.stream()
-            .collect(Collectors.groupingBy(dto -> dto.getDate().withDayOfYear(1)))
-            .entrySet()
-            .stream()
-            .sorted(
-                Map.Entry.<LocalDate, List<SZHouseDealStatisticIntegrationDto>>comparingByKey(
-                    localDateComparator))
-            .map(entry -> aggregateData(entry.getValue(), entry.getKey()))
-            .collect(Collectors.toList());
-      case DAY:
-      default:
-        return integratedData.stream().sorted(dateComparator).collect(Collectors.toList());
-    }
+    return switch (dateFormat) {
+      case WEEK ->
+          integratedData.stream()
+              .collect(Collectors.groupingBy(dto -> getStartOfWeek(dto.getDate(), startDate)))
+              .entrySet()
+              .stream()
+              .sorted(
+                  Map.Entry.<LocalDate, List<SZHouseDealStatisticIntegrationDto>>comparingByKey(
+                      localDateComparator))
+              .map(entry -> aggregateData(entry.getValue(), entry.getKey()))
+              .collect(Collectors.toList());
+      case MONTH ->
+          integratedData.stream()
+              .collect(Collectors.groupingBy(dto -> dto.getDate().withDayOfMonth(1)))
+              .entrySet()
+              .stream()
+              .sorted(
+                  Map.Entry.<LocalDate, List<SZHouseDealStatisticIntegrationDto>>comparingByKey(
+                      localDateComparator))
+              .map(entry -> aggregateData(entry.getValue(), entry.getKey()))
+              .collect(Collectors.toList());
+      case YEAR ->
+          integratedData.stream()
+              .collect(Collectors.groupingBy(dto -> dto.getDate().withDayOfYear(1)))
+              .entrySet()
+              .stream()
+              .sorted(
+                  Map.Entry.<LocalDate, List<SZHouseDealStatisticIntegrationDto>>comparingByKey(
+                      localDateComparator))
+              .map(entry -> aggregateData(entry.getValue(), entry.getKey()))
+              .collect(Collectors.toList());
+      default -> integratedData.stream().sorted(dateComparator).collect(Collectors.toList());
+    };
   }
 
   private LocalDate getStartOfWeek(LocalDate date, LocalDate startDate) {

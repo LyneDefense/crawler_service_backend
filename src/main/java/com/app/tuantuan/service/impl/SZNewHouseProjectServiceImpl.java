@@ -175,7 +175,7 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
     List<String> failureProjectNames =
         projectDtos.stream()
             .filter(e -> e.getStatus() == CrawlStatus.FAILURE)
-            .map(SZNewHouseProjectDto::getProjectName)
+            .map(dto -> StrUtil.format(dto.getProjectName() + "\n"))
             .toList();
     log.info(
         "[保存 {} -> {} 一手房源公示首页信息完成, 总处理数:{}, 跳过数:{}, 成功数:{}, 失败数:{}, 失败楼盘{},总消耗时间:{}]",
@@ -203,7 +203,7 @@ public class SZNewHouseProjectServiceImpl implements ISZNewHouseProjectService {
   public void syncCurrentItemsToBackendService(LocalDate startDate, LocalDate endDate) {
     List<NewHouseMainPageItemDto> mainPageItems =
         szNewHouseMainPageRepository.selectNewHouseMainPageItemList(
-            new NewHouseMainPageReqDto(startDate, endDate, null,null));
+            new NewHouseMainPageReqDto(startDate, endDate, null, null));
     List<SZNewHouseProjectDto> dtos =
         szNewHouseProjectRepository.selectNewHouseProjectByMainPageItems(mainPageItems);
     dtos.forEach(e -> crawlerUpdateServiceCaller.updateCrawlerData(e));
